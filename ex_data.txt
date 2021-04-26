@@ -1,0 +1,1 @@
+(a1[&&PRIME ID=0 S=A AC=(0 4)],((b1[&&PRIME ID=1 S=B AC=(1)],c1[&&PRIME ID=2 S=C AC=(2)])[&&PRIME ID=3 AC=(3)],(b2[&&PRIME ID=4 S=B AC=(1)],c2[&&PRIME ID=5 S=C AC=(2)])[&&PRIME ID=6 AC=(3)])[&&PRIME ID=7 AC=(4)])[&&PRIME ID=8]
