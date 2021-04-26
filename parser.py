@@ -13,7 +13,8 @@ def parser(file):
         str_input = f.read()
 
     str_input = split_operation(str_input)
-    print(str_input)
+
+    return str_input
 
 
 def split_operation(str_content):
