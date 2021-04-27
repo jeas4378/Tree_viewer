@@ -1,4 +1,3 @@
-import sys
 
 valid_symbols = [')', '(', ',']
 
