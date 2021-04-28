@@ -2,33 +2,32 @@
 valid_symbols = [')', '(', ',']
 
 
-def parser(file, bool_separate=False):
+def parser(host_file, gene_file):
     """
     A parser for the PrimeTV-format. Returns one or two arrays with either Host- and Gene-tree combined or seperate.
 
-    :param file: A file on PrimeTV-format to be parsed.
-    :param bool_separate: If True the Host-tree and Gene-tree will be returned separately.
-    :return: If bool_seperate is True then Host- and Gene-tree will be returned separately. Otherwise one array will
-    be returned with Host- and Gene-tree combined.
+    :param host_file: A file containing a host-tree on PrimeTV-format.
+    :param gene_file: A file containing a reconciled gene-tree on PrimeTV-format.
+    :return: Returns two arrays containing the host-tree and reconciled gene-tree.
     """
-    if file is None:
+    if host_file is None:
         return False
 
-    with open(file, 'r') as f:
-        str_input = f.read()
+    with open(host_file, 'r') as f:
+        str_host = f.read()
 
-    str_input = split_operation(str_input)
+    with open(gene_file, 'r') as f:
+        str_gene = f.read()
 
-    if bool_separate:
-        arr_host, arr_gene = host_gene_retriever(str_input, True, True)
-        print(arr_host)
-        print(arr_gene)
-        return arr_host, arr_gene
+    arr_gene = m_splitter(str_gene)
+    arr_host = m_splitter(str_host)
 
-    return str_input
+    print(arr_gene)
+    print(arr_host)
+    return arr_host, arr_gene
 
 
-def split_operation(str_content):
+def m_splitter(str_content):
     """
     A function that does the actual splitting by going through 'str_content' and splitting it accordingly into an
     array.
@@ -48,6 +47,11 @@ def split_operation(str_content):
             current = i + 1
             end = current
             continue
+        elif str_content[i] == ":":
+            if (end - current) >= 1:
+                str_split.append(str_content[current:end])
+            current = i + 1
+            end = current
         elif str_content[i] == '[':
             if (end - current) > 1:
                 str_split.append(str_content[current:end])
@@ -96,4 +100,4 @@ def host_gene_retriever(arr_input, bool_host, bool_gene):
 
 
 if __name__ == '__main__':
-    parser('ex_data.txt', True)
+    parser('ex_host.txt', 'ex_gene.txt')
