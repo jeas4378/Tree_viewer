@@ -2,12 +2,11 @@
 valid_symbols = [')', '(', ',']
 
 
-def parser(host_file, gene_file):
+def parser(host_file):
     """
     A parser for the PrimeTV-format. Returns one or two arrays with either Host- and Gene-tree combined or seperate.
 
     :param host_file: A file containing a host-tree on PrimeTV-format.
-    :param gene_file: A file containing a reconciled gene-tree on PrimeTV-format.
     :return: Returns two arrays containing the host-tree and reconciled gene-tree.
     """
     if host_file is None:
@@ -16,15 +15,10 @@ def parser(host_file, gene_file):
     with open(host_file, 'r') as f:
         str_host = f.read()
 
-    with open(gene_file, 'r') as f:
-        str_gene = f.read()
-
-    arr_gene = m_splitter(str_gene)
     arr_host = m_splitter(str_host)
 
-    print(arr_gene)
     print(arr_host)
-    return arr_host, arr_gene
+    return arr_host
 
 
 def m_splitter(str_content):
@@ -50,7 +44,7 @@ def m_splitter(str_content):
         elif str_content[i] == ":":
             if (end - current) >= 1:
                 str_split.append(str_content[current:end])
-            current = i + 1
+            current = i
             end = current
         elif str_content[i] == '[':
             if (end - current) > 1:
@@ -99,5 +93,44 @@ def host_gene_retriever(arr_input, bool_host, bool_gene):
         return arr_gene
 
 
+def is_numerical(val):
+
+    if val[0] == ":":
+        return True
+    else:
+        return False
+
+
+def primetag_extractor(tag):
+
+    tag_split = tag.split()
+    tag_split.pop(0)
+
+    id = None
+    host_leaf = None
+    AC = None
+    name = None
+
+    buffer = ""
+
+    for element in tag_split:
+        if element[0] == 'I':
+            buffer = element[3:]
+            id = buffer
+        elif element[0] == 'A':
+            buffer = element[4:len(element)]
+            buffer = buffer.split()
+            AC = buffer
+        elif element[0] == 'S':
+            buffer = element[2:]
+            host_leaf = buffer
+        elif element[0] == 'N':
+            buffer = element[6:]
+            name = buffer
+
+    return id, host_leaf, AC, name
+
+
+
 if __name__ == '__main__':
-    parser('ex_host.txt', 'ex_gene.txt')
+    parser('ex_host.txt')
