@@ -79,12 +79,27 @@ class Tree:
     def __init__(self, tree_data):
         self.root = Node()
         self.data = p.parser(tree_data)
+        self.tree_info = {}
+        self.height = 0
 
     def get_root(self):
         return self.root
 
     def get_data(self):
         return self.data
+
+    def get_height(self):
+        return self.height
+
+    def set_height(self, val):
+        if val > self.get_height():
+            self.height = val
+
+    def create_update_tree_info(self, key, value):
+        self.tree_info[key] = value
+
+    def get_tree_info(self, key):
+        return self.tree_info[key]
 
     def create_tree(self):
         parser_data = self.get_data()
