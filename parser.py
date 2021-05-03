@@ -101,9 +101,9 @@ def is_numerical(val):
         return False
 
 
-def primetag_extractor(tag):
+def primetag_extractor(node, tag):
 
-    tag_split = tag.split()
+    tag_split = my_prime_splitter(tag)
     tag_split.pop(0)
 
     id = None
@@ -116,21 +116,43 @@ def primetag_extractor(tag):
     for element in tag_split:
         if element[0] == 'I':
             buffer = element[3:]
-            id = buffer
+            node.set_id(buffer)
         elif element[0] == 'A':
-            buffer = element[4:len(element)]
+            buffer = element[4:-1]
             buffer = buffer.split()
-            AC = buffer
+            node.set_ac(buffer)
         elif element[0] == 'S':
             buffer = element[2:]
-            host_leaf = buffer
+            node.set_host_leaf(buffer)
         elif element[0] == 'N':
             buffer = element[6:]
-            name = buffer
+            node.set_name(buffer)
 
-    return id, host_leaf, AC, name
+def my_prime_splitter(val):
 
+    result = []
+    bracket = 0
+    current = 0
+    end = 0
 
+    for i in range(1, len(val)):
+        end += 1
+        if val[i] == ' ' and bracket == 0:
+            result.append(val[current:end])
+            current = i + 1
+            end = current
+
+        elif val[i] == '(':
+            bracket += 1
+            end += 1
+
+        elif val[i] == ')':
+            bracket -= 1
+            end += 1
+
+    result.append(val[current:end])
+
+    return result
 
 if __name__ == '__main__':
     parser('ex_host.txt')
