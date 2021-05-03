@@ -1,5 +1,6 @@
 import parser as p
 
+
 class Node:
 
     def __init__(self, parent=None):
@@ -89,20 +90,7 @@ class Tree:
         parser_data = self.get_data()
         root = self.get_root()
 
-        if parser_data[0] == '(':
-            left_child = Node(root)
-            parser_data.pop(0)
-            left_child, parser_data = self.__rec_tree(left_child, parser_data)
-            root.set_left_child(left_child)
-
-        if parser_data[0] == ",":
-            right_child = Node(root)
-            parser_data.pop(0)
-            right_child, parser_data = self.__rec_tree(right_child, parser_data)
-            root.set_right_child(right_child)
-
-        if parser_data[0][0] == '&':
-            p.primetag_extractor(root, parser_data[0])
+        self.__rec_tree(root, parser_data)
 
     def __rec_tree(self, node, parser_data):
 
@@ -112,7 +100,13 @@ class Tree:
             left_child, parser_data = self.__rec_tree(left_child, parser_data)
             node.set_left_child(left_child)
 
-        if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&':
+        if parser_data[0] == ',':
+            right_child = Node(node)
+            parser_data.pop(0)
+            right_child, parser_data = self.__rec_tree(right_child, parser_data)
+            node.set_right_child(right_child)
+
+        if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(parser_data[0]):
             node.set_leaf_name(parser_data[0])
             parser_data.pop(0)
 
@@ -124,13 +118,9 @@ class Tree:
         if parser_data[0][0] == '&':
             p.primetag_extractor(node, parser_data[0])
             parser_data.pop(0)
+            if parser_data != [] and parser_data[0] == ')':
+                parser_data.pop(0)
             return node, parser_data
-
-        if parser_data[0] == ',':
-            right_child = Node(node)
-            parser_data.pop(0)
-            right_child, parser_data = self.__rec_tree(right_child, parser_data)
-            node.set_right_child(right_child)
 
         if parser_data[0] == ')':
             parser_data.pop(0)

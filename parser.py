@@ -30,37 +30,29 @@ def m_splitter(str_content):
     """
     str_split = []
     current = 0
-    end = 1
     bool_brackets = False
 
     for i in range(len(str_content)):
         if (str_content[i] in valid_symbols) and not bool_brackets:
-            if (end - current) > 1:
-                str_split.append(str_content[current: end])
+            if (i - current) > 1:
+                str_split.append(str_content[current: i])
             str_split.append(str_content[i])
             current = i + 1
-            end = current
             continue
         elif str_content[i] == ":":
-            if (end - current) >= 1:
-                str_split.append(str_content[current:end])
+            if (i - current) >= 1:
+                str_split.append(str_content[current:i])
             current = i
-            end = current
         elif str_content[i] == '[':
-            if (end - current) > 1:
-                str_split.append(str_content[current:end])
+            if (i - current) > 1:
+                str_split.append(str_content[current:i])
             current = i + 1
-            end = current
             bool_brackets = True
             continue
         elif str_content[i] == ']':
-            str_split.append(str_content[current:end])
+            str_split.append(str_content[current:i])
             current = i + 1
-            end = current
             bool_brackets = False
-            continue
-        else:
-            end += 1
             continue
 
     return str_split
@@ -153,6 +145,14 @@ def my_prime_splitter(val):
     result.append(val[current:end])
 
     return result
+
+
+def is_valid_symbols(val):
+
+    if val in valid_symbols:
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     parser('ex_host.txt')
