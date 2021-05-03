@@ -17,7 +17,7 @@ def parser(host_file):
 
     arr_host = m_splitter(str_host)
 
-    print(arr_host)
+    #print(arr_host)
     return arr_host
 
 

@@ -13,6 +13,9 @@ class Node:
         self.ac = []
         self.name = "No name"
         self.parent = parent
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
 
     def set_left_child(self, node):
         self.left_child = node
@@ -72,6 +75,23 @@ class Node:
     def get_name(self):
         return self.name
 
+    def set_x(self, val):
+        self.x = val
+
+    def set_y(self, val):
+        self.y = val
+
+    def set_z(self, val):
+        self.z = val
+
+    def get_x(self):
+        return self.x
+
+    def get_y(self):
+        return self.y
+
+    def get_z(self):
+        return self.z
 
 
 class Tree:
@@ -105,20 +125,20 @@ class Tree:
         parser_data = self.get_data()
         root = self.get_root()
 
-        self.__rec_tree(root, parser_data)
+        self.__rec_tree(root, parser_data, 0)
 
-    def __rec_tree(self, node, parser_data):
+    def __rec_tree(self, node, parser_data, height):
 
         if parser_data[0] == '(':
             left_child = Node(node)
             parser_data.pop(0)
-            left_child, parser_data = self.__rec_tree(left_child, parser_data)
+            left_child, parser_data = self.__rec_tree(left_child, parser_data, height + 1)
             node.set_left_child(left_child)
 
         if parser_data[0] == ',':
             right_child = Node(node)
             parser_data.pop(0)
-            right_child, parser_data = self.__rec_tree(right_child, parser_data)
+            right_child, parser_data = self.__rec_tree(right_child, parser_data, height + 1)
             node.set_right_child(right_child)
 
         if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(parser_data[0]):
@@ -132,7 +152,9 @@ class Tree:
 
         if parser_data[0][0] == '&':
             p.primetag_extractor(node, parser_data[0])
+            self.create_update_tree_info(node.get_id(), node)
             parser_data.pop(0)
+            self.set_height(height)
             if parser_data != [] and parser_data[0] == ')':
                 parser_data.pop(0)
             return node, parser_data
