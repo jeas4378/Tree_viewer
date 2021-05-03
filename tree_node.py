@@ -88,48 +88,52 @@ class Tree:
     def create_tree(self):
         parser_data = self.get_data()
         root = self.get_root()
-        index = 0
 
-        if parser_data[index] == '(':
+        if parser_data[0] == '(':
             left_child = Node(root)
-            left_child, index = self.__rec_tree(left_child, parser_data, index+1)
+            parser_data.pop(0)
+            left_child, parser_data = self.__rec_tree(left_child, parser_data)
             root.set_left_child(left_child)
 
-        if parser_data[index] == ",":
+        if parser_data[0] == ",":
             right_child = Node(root)
-            right_child, index = self.__rec_tree(right_child, parser_data, index+1)
+            parser_data.pop(0)
+            right_child, parser_data = self.__rec_tree(right_child, parser_data)
             root.set_right_child(right_child)
 
-        if parser_data[index][0] == '&':
-            p.primetag_extractor(root, parser_data[index])
+        if parser_data[0][0] == '&':
+            p.primetag_extractor(root, parser_data[0])
 
+    def __rec_tree(self, node, parser_data):
 
-    def __rec_tree(self, node, parser_data, index):
-
-        if parser_data[index] == '(':
+        if parser_data[0] == '(':
             left_child = Node(node)
-            left_child, index = self.__rec_tree(left_child, parser_data, index + 1)
+            parser_data.pop(0)
+            left_child, parser_data = self.__rec_tree(left_child, parser_data)
             node.set_left_child(left_child)
 
-        if not p.is_numerical(parser_data[index]) and parser_data[index][0] != '&':
-            node.set_leaf_name(parser_data[index])
-            index += 1
+        if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&':
+            node.set_leaf_name(parser_data[0])
+            parser_data.pop(0)
 
-        if p.is_numerical(parser_data[index]):
-            val = parser_data[index][1:]
+        if p.is_numerical(parser_data[0]):
+            val = parser_data[0][1:]
             node.set_distance(val)
-            index += 1
+            parser_data.pop(0)
 
-        if parser_data[index][0] == '&':
-            p.primetag_extractor(node, parser_data[index])
-            return node, index+1
+        if parser_data[0][0] == '&':
+            p.primetag_extractor(node, parser_data[0])
+            parser_data.pop(0)
+            return node, parser_data
 
-        if parser_data[index] == ',':
+        if parser_data[0] == ',':
             right_child = Node(node)
-            right_child, index = self.__rec_tree(right_child, parser_data, index + 1)
+            parser_data.pop(0)
+            right_child, parser_data = self.__rec_tree(right_child, parser_data)
             node.set_right_child(right_child)
 
-        if parser_data[index] == ')':
-            return node, index + 1
+        if parser_data[0] == ')':
+            parser_data.pop(0)
+            return node, parser_data
 
-        return node, index
+        return node, parser_data
