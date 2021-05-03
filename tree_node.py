@@ -16,6 +16,7 @@ class Node:
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
+        self.height = 0
 
     def set_left_child(self, node):
         self.left_child = node
@@ -93,6 +94,12 @@ class Node:
     def get_z(self):
         return self.z
 
+    def set_height(self, val):
+        self.height = val
+
+    def get_height(self):
+        return self.height
+
 
 class Tree:
 
@@ -154,6 +161,7 @@ class Tree:
             p.primetag_extractor(node, parser_data[0])
             self.create_update_tree_info(node.get_id(), node)
             parser_data.pop(0)
+            node.set_height(height)
             self.set_height(height)
             if parser_data != [] and parser_data[0] == ')':
                 parser_data.pop(0)
