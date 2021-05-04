@@ -108,6 +108,10 @@ class Tree:
         self.data = p.parser(tree_data)
         self.tree_info = {}
         self.height = 0
+        self.x_offset = 0
+        self.z_offset = 0
+        self.tree_width = 0
+        self.node_size = 0.1
 
     def get_root(self):
         return self.root
@@ -127,6 +131,33 @@ class Tree:
 
     def get_tree_info(self, key):
         return self.tree_info[key]
+
+    def set_x_offset(self, val):
+        self.x_offset = val
+
+    def set_z_offset(self, val):
+        self.z_offset = val
+
+    def get_x_offset(self):
+        return self.x_offset
+
+    def get_z_offset(self):
+        return self.z_offset
+
+    def set_node_size(self, val):
+        if val > 0:
+            self.node_size = val
+
+    def get_node_size(self):
+        return self.node_size
+
+    def create_tree_width(self):
+        height = self.get_height()
+        if height > 0:
+            self.tree_width = (2**height)*self.get_node_size()
+
+    def get_tree_width(self):
+        return self.tree_width
 
     def create_tree(self):
         parser_data = self.get_data()
