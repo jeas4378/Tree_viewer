@@ -224,10 +224,12 @@ class Tree:
                 y = host_node.get_y()
                 root.set_z(z)
                 root.set_y(y)
+            else:
+                root.set_y(1)
             width = self.get_tree_width()
             width /= 4
-            self.__rec_node_placement(root.get_left_child(), -width, 0.1, self.get_z_offset(), host_tree)
-            self.__rec_node_placement(root.get_right_child(), width, 0.1, self.get_z_offset(), host_tree)
+            self.__rec_node_placement(root.get_left_child(), -width, root.get_y() - 0.1, self.get_z_offset(), host_tree)
+            self.__rec_node_placement(root.get_right_child(), width, root.get_y() - 0.1, self.get_z_offset(), host_tree)
 
     def __rec_node_placement(self, node, x, y, z, host_tree):
 
@@ -254,7 +256,9 @@ class Tree:
 
             width = abs(x) / 2
             if node.get_left_child() is not None:
-                self.__rec_node_placement(node.get_left_child(), x - width, y + 0.1, self.get_z_offset(), host_tree)
+                self.__rec_node_placement(node.get_left_child(), x - width, node.get_y() - 0.1, self.get_z_offset(),
+                                          host_tree)
             if node.get_right_child() is not None:
-                self.__rec_node_placement(node.get_right_child(), x + width, y + 0.1, self.get_z_offset(), host_tree)
+                self.__rec_node_placement(node.get_right_child(), x + width, node.get_y() - 0.1, self.get_z_offset(),
+                                          host_tree)
 
