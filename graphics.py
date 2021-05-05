@@ -7,7 +7,14 @@ def graphics(host_tree, gene_tree):
     colors = vtk.vtkNamedColors()
 
     host_graphic_obj = vtk.vtkConeSource()
+    host_graphic_obj.SetHeight(0.1)
+    host_graphic_obj.SetRadius(0.03)
+    host_graphic_obj.SetResolution(10)
+
     gene_graphic_obj = vtk.vtkCubeSource()
+    gene_graphic_obj.SetXLength(0.1)
+    gene_graphic_obj.SetYLength(0.1)
+    gene_graphic_obj.SetZLength(0.1)
 
     host_graphic_mapper = vtk.vtkPolyDataMapper()
     gene_graphic_mapper = vtk.vtkPolyDataMapper()
@@ -42,6 +49,9 @@ def graphics(host_tree, gene_tree):
     renWin.AddRenderer(renderer)
     renWin.SetSize(1280, 720)
     renWin.SetWindowName("Tree viewer")
+
+    camera = renderer.GetActiveCamera()
+    camera.SetPosition(20, 0.5, 20)
 
     for i in range(0, 360):  # render the image
         # render the image
