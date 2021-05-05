@@ -161,7 +161,7 @@ class Tree:
     def create_tree_width(self):
         height = self.get_height()
         if height > 0:
-            self.tree_width = (2**height)*self.get_node_size()+(self.get_node_size()*10)
+            self.tree_width = (2**height)*self.get_node_size()+(self.get_node_size()*2)
 
     def get_tree_width(self):
         if self.tree_width == 0:

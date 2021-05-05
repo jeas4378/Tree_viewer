@@ -11,6 +11,7 @@ def graphics(host_tree, gene_tree):
     host_graphic_obj.SetHeight(0.1)
     host_graphic_obj.SetRadius(0.03)
     host_graphic_obj.SetResolution(10)
+    host_graphic_obj.SetDirection(0, 1, 0)
 
     gene_graphic_obj = vtk.vtkCubeSource()
     gene_graphic_obj.SetXLength(0.1)
