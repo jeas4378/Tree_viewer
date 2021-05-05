@@ -4,17 +4,16 @@ from vtkmodules.util import colors
 
 def graphics(host_tree, gene_tree):
 
-    color_host = vtk.NamedColors()
-    color_gene = vtk.NamedColors()
+    colors = vtk.vtkNamedColors()
 
     host_graphic_obj = vtk.vtkConeSource()
     gene_graphic_obj = vtk.vtkCubeSource()
 
-    host_graphic_mapper = vtk.vtkPolyDataMatter()
-    gene_graphic_mapper = vtk.vtkPolyDataMatter()
+    host_graphic_mapper = vtk.vtkPolyDataMapper()
+    gene_graphic_mapper = vtk.vtkPolyDataMapper()
 
-    host_graphic_mapper.setInputConnection(host_graphic_obj.getOutputPort)
-    gene_graphic_mapper.setInputConnection(gene_graphic_obj.getOutputPort)
+    host_graphic_mapper.SetInputConnection(host_graphic_obj.GetOutputPort())
+    gene_graphic_mapper.SetInputConnection(gene_graphic_obj.GetOutputPort())
 
     host_graphic_property = vtk.vtkProperty()
     host_graphic_property.SetColor(colors.GetColor3d("Green"))
@@ -56,9 +55,9 @@ def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
     graphic_actors = []
     for node in root:
         actor = vtk.vtkActor()
-        actor.setMapper(graphics_mapper)
-        actor.setProperty(graphics_property)
-        actor.setPosition(node.get_x(), node.get_y(), node.get_z())
+        actor.SetMapper(graphics_mapper)
+        actor.SetProperty(graphics_property)
+        actor.SetPosition(node.get_x(), node.get_y(), node.get_z())
         graphic_actors.append(actor)
 
     return graphic_actors
@@ -67,6 +66,6 @@ def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
 def graphics_add_to_renderer(renderer, actors):
 
     for actor in actors:
-        renderer.addActor(actor)
+        renderer.AddActor(actor)
 
     return renderer
