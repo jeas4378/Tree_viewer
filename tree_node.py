@@ -100,6 +100,13 @@ class Node:
     def get_height(self):
         return self.height
 
+    def __iter__(self):
+        yield self
+        if self.left_child:
+            yield from self.left_child
+        if self.right_child:
+            yield from self.right_child
+
 
 class Tree:
 
@@ -160,13 +167,6 @@ class Tree:
         if self.tree_width == 0:
             self.create_tree_width()
         return self.tree_width
-
-    def tree_traverser(self, node):
-        yield node
-        if node.get_left_child() is not None:
-            yield from self.tree_traverser(node.get_left_child())
-        if node.get_right_child() is not None:
-            yield from self.tree_traverser(node.get_right_child())
 
     def create_tree(self):
         parser_data = self.get_data()
