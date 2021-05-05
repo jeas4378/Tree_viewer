@@ -125,24 +125,19 @@ def my_prime_splitter(val):
     result = []
     bracket = 0
     current = 0
-    end = 0
 
     for i in range(1, len(val)):
-        end += 1
         if val[i] == ' ' and bracket == 0:
-            result.append(val[current:end])
+            result.append(val[current:i])
             current = i + 1
-            end = current
 
         elif val[i] == '(':
             bracket += 1
-            end += 1
 
         elif val[i] == ')':
             bracket -= 1
-            end += 1
 
-    result.append(val[current:end])
+    result.append(val[current:])
 
     return result
 
