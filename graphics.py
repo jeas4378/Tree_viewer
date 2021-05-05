@@ -1,4 +1,5 @@
 import vtk
+import tree_node
 from vtkmodules.util import colors
 
 
@@ -51,13 +52,20 @@ def graphics(host_tree, gene_tree):
     renWin.SetWindowName("Tree viewer")
 
     camera = renderer.GetActiveCamera()
-    camera.SetPosition(20, 0.5, 20)
+    camera.SetFocalPoint(0, 0.5, 0)
 
-    for i in range(0, 360):  # render the image
+    if host_tree.get_x_offset() > gene_tree.get_z_offset():
+        offset = host_tree.get_x_offset() + (host_tree.get_node_size() * 10)
+        camera.SetPosition(offset, 0.5, offset)
+    else:
+        offset = gene_tree.get_z_offset() + (gene_tree.get_node_size() * 10)
+        camera.SetPosition(offset, 0.5, offset)
+
+    for i in range(0, 3600):  # render the image
         # render the image
         renWin.Render()
         # rotate the active camera by one degree
-        renderer.GetActiveCamera().Azimuth(1)
+        renderer.GetActiveCamera().Azimuth(0.1)
 
 def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
 
