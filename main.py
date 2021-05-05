@@ -1,4 +1,5 @@
 import tree_node as tn
+import graphics as g
 
 if __name__ == '__main__':
     tree_host = tn.Tree('ex_host.txt')
@@ -13,5 +14,7 @@ if __name__ == '__main__':
 
     tree_host.node_placement()
     tree_gene.node_placement(tree_host)
+
+    g.graphics(tree_host, tree_gene)
 
     pass
