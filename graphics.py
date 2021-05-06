@@ -99,18 +99,27 @@ def graphics_line_placement(tree):
     linesPolyData = vtk.vtkPolyData()
     lines = vtk.vtkCellArray()
 
+    print(lines)
+
     for node in root:
         if node.get_parent():
             node_pos = [node.get_x(), node.get_y(), node.get_z()]
             node_parent = node.get_parent()
             parent_pos = [node_parent.get_x(), node_parent.get_y(), node_parent.get_z()]
 
-            line = vtk.vtkLineSource()
-            line.SetPoint1(node_pos)
-            line.SetPoint2(parent_pos)
+            pts = vtk.vtkPoints()
+            pts.InsertNextPoint(node_pos)
+            pts.InsertNextPoint(parent_pos)
+
+            linesPolyData.SetPoints(pts)
+
+            line = vtk.vtkLine()
+            line.GetPointIds().SetId(0, 0)
+            line.GetPointIds().SetId(1, 1)
 
             lines.InsertNextCell(line)
 
+    print(lines)
     linesPolyData.SetLines(lines)
     color = vtk.vtkNamedColors()
 

@@ -2,8 +2,8 @@ import tree_node as tn
 import graphics as g
 
 if __name__ == '__main__':
-    tree_host = tn.Tree('ex_host.txt')
-    tree_gene = tn.Tree('ex_gene.txt')
+    tree_host = tn.Tree('cyano.stree')
+    tree_gene = tn.Tree('cyano1.rtree')
 
     tree_host.create_tree()
     tree_gene.create_tree()
