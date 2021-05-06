@@ -41,10 +41,14 @@ def graphics(host_tree, gene_tree):
 
     gene_actors = graphics_node_placement(gene_tree, gene_graphic_mapper, gene_graphic_property)
 
+    host_line_actor = graphics_line_placement(host_tree)
+
     renderer = vtk.vtkRenderer()
 
     renderer = graphics_add_to_renderer(renderer, host_actors)
     renderer = graphics_add_to_renderer(renderer, gene_actors)
+
+    renderer.AddActor(host_line_actor)
 
     renderer.SetBackground(colors.GetColor3d("CornflowerBlue"))
 
@@ -88,6 +92,43 @@ def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
     print("\n")
     return graphic_actors
 
+
+def graphics_line_placement(tree):
+
+    root = tree.get_root()
+    linesPolyData = vtk.vtkPolyData()
+    lines = vtk.vtkCellArray()
+
+    for node in root:
+        if node.get_parent():
+            node_pos = [node.get_x(), node.get_y(), node.get_z()]
+            node_parent = node.get_parent()
+            parent_pos = [node_parent.get_x(), node_parent.get_y(), node_parent.get_z()]
+
+            line = vtk.vtkLineSource()
+            line.SetPoint1(node_pos)
+            line.SetPoint2(parent_pos)
+
+            lines.InsertNextCell(line)
+
+    linesPolyData.SetLines(lines)
+    color = vtk.vtkNamedColors()
+
+    lines_graphic_property = vtk.vtkProperty()
+    lines_graphic_property.SetColor(color.GetColor3d("Gray"))
+    lines_graphic_property.SetDiffuse(0.7)
+    lines_graphic_property.SetSpecular(0)
+    lines_graphic_property.SetSpecularPower(0)
+
+    mapper = vtk.vtkPolyDataMapper()
+    mapper.SetInputData(linesPolyData)
+
+    actor = vtk.vtkActor()
+    actor.SetMapper(mapper)
+    actor.SetProperty(lines_graphic_property)
+    actor.GetProperty().SetLineWidth(0.01)
+
+    return actor
 
 def graphics_add_to_renderer(renderer, actors):
 
