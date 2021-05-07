@@ -42,6 +42,7 @@ def graphics(host_tree, gene_tree):
     gene_actors = graphics_node_placement(gene_tree, gene_graphic_mapper, gene_graphic_property)
 
     host_line_actor = graphics_line_placement(host_tree)
+    gene_line_actor = graphics_line_placement(gene_tree)
 
     renderer = vtk.vtkRenderer()
 
@@ -49,6 +50,7 @@ def graphics(host_tree, gene_tree):
     renderer = graphics_add_to_renderer(renderer, gene_actors)
 
     renderer.AddActor(host_line_actor)
+    renderer.AddActor(gene_line_actor)
 
     renderer.SetBackground(colors.GetColor3d("CornflowerBlue"))
 
@@ -60,8 +62,8 @@ def graphics(host_tree, gene_tree):
     camera = renderer.GetActiveCamera()
     camera.SetFocalPoint(0, 0.5, 0)
 
-    print(host_tree.get_x_offset(), host_tree.get_z_offset())
-    print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
+    #print(host_tree.get_x_offset(), host_tree.get_z_offset())
+    #print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
 
     if abs(host_tree.get_x_offset()) > abs(gene_tree.get_z_offset()):
         offset = host_tree.get_x_offset() + (host_tree.get_node_size() * 20)
@@ -70,11 +72,20 @@ def graphics(host_tree, gene_tree):
         offset = gene_tree.get_z_offset() + (gene_tree.get_node_size() * 20)
         camera.SetPosition(offset, 0.5, offset)
 
-    for i in range(0, 3600):  # render the image
+    iren = vtk.vtkRenderWindowInteractor()
+    iren.SetRenderWindow(renWin)
+
+    style = vtk.vtkInteractorStyleTrackballCamera()
+    iren.SetInteractorStyle(style)
+
+    iren.Initialize()
+    iren.Start()
+
+    #for i in range(0, 3600):  # render the image
         # render the image
-        renWin.Render()
+     #   renWin.Render()
         # rotate the active camera by one degree
-        renderer.GetActiveCamera().Azimuth(0.1)
+      #  renderer.GetActiveCamera().Azimuth(0.1)
 
 
 def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
@@ -82,14 +93,14 @@ def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
     root = host_tree.get_root()
     graphic_actors = []
     for node in root:
-        print(node.get_id(), node.get_x(), node.get_y(), node.get_z())
+        #print(node.get_id(), node.get_x(), node.get_y(), node.get_z())
         actor = vtk.vtkActor()
         actor.SetMapper(graphics_mapper)
         actor.SetProperty(graphics_property)
         actor.SetPosition(node.get_x(), node.get_y(), node.get_z())
         graphic_actors.append(actor)
 
-    print("\n")
+    #print("\n")
     return graphic_actors
 
 

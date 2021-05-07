@@ -119,6 +119,7 @@ class Tree:
         self.z_offset = 0
         self.tree_width = 0
         self.node_size = 0.1
+        self.leafs = []
 
     def get_root(self):
         return self.root
@@ -158,6 +159,12 @@ class Tree:
     def get_node_size(self):
         return self.node_size
 
+    def add_leaf(self, node):
+        self.leafs.append(node)
+
+    def get_leafs(self):
+        return self.leafs
+
     def create_tree_width(self):
         height = self.get_height()
         if height > 0:
@@ -189,6 +196,7 @@ class Tree:
             node.set_right_child(right_child)
 
         if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(parser_data[0]):
+            self.add_leaf(node)
             node.set_leaf_name(parser_data[0])
             parser_data.pop(0)
 
