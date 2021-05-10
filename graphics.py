@@ -39,7 +39,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         current = self.get_current_rotate()
         max = self.get_max_rotate()
         min = self.get_min_rotate()
-        
+
         if (current + rotate_diff) > max:
             clamp = (current + rotate_diff) - max
             rotate_diff -= clamp
@@ -50,6 +50,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.get_camera().Azimuth(rotate_diff)
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
+        if current <= min or current >= max:
+            self.get_camera().SetParallelProjection(1)
+        else:
+            self.get_camera().SetParallelProjection(0)
         self.get_renWin().Render()
 
 
