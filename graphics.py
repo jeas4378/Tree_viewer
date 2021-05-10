@@ -16,9 +16,39 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.AddObserver("MouseMoveEvent", self.mouse_event)
         self.camera = None
         self.within_parallell = 45
+        self.last_picked_actor = None
+        self.last_picked_property = vtk.vtkProperty()
+        self.renderer = None
+        self.colors = vtk.vtkNamedColors()
 
     def left_button_press(self, obj, event):
         self.boolRotate = 1
+
+        clickPos = self.iren.GetEventPosition()
+
+        picker = vtk.vtkPropPicker()
+        picker.Pick(clickPos[0], clickPos[1], 0, self.get_renderer())
+
+        # get the new
+        self.NewPickedActor = picker.GetActor()
+
+        # If something was selected
+        if self.NewPickedActor:
+            # If we picked something before, reset its property
+            if self.last_picked_actor:
+                self.last_picked_actor.GetProperty().DeepCopy(self.last_picked_property)
+
+            # Save the property of the picked actor so that we can
+            # restore it next time
+            self.last_picked_property.DeepCopy(self.NewPickedActor.GetProperty())
+            # Highlight the picked actor by changing its properties
+            self.NewPickedActor.GetProperty().SetColor(self.colors.GetColor3d('Blue'))
+            self.NewPickedActor.GetProperty().SetDiffuse(1.0)
+            self.NewPickedActor.GetProperty().SetSpecular(0.0)
+            self.NewPickedActor.GetProperty().EdgeVisibilityOn()
+
+            # save the last picked actor
+            self.last_picked_actor = self.NewPickedActor
         return
 
     def left_button_release(self, obj, event):
@@ -90,6 +120,12 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def get_within_parallell(self):
         return self.within_parallell
+
+    def set_renderer(self, renderer):
+        self.renderer = renderer
+
+    def get_renderer(self):
+        return self.renderer
 
     def is_in_valid_range(self, x, last_x):
         diff = last_x - x
@@ -186,6 +222,7 @@ def graphics(host_tree, gene_tree):
     inter.set_iren(iren)
     inter.set_camera(renderer.GetActiveCamera())
     inter.set_renWin(renWin)
+    inter.set_renderer(renderer)
     iren.SetInteractorStyle(inter)
 
     iren.Initialize()
