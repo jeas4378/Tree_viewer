@@ -30,14 +30,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         xy_pos = self.iren.GetEventPosition()
         x = xy_pos[0]
-        print("x", x)
 
         if self.get_boolRotate():
             self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
-        print("försöker rotera")
-        print(self.get_current_rotate())
         if self.get_max_rotate() > self.get_current_rotate() > self.get_min_rotate():
 
             self.get_camera().Azimuth(last_x - x)
