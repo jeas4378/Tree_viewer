@@ -15,6 +15,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.AddObserver("LeftButtonReleaseEvent", self.left_button_release)
         self.AddObserver("MouseMoveEvent", self.mouse_event)
         self.camera = None
+        self.within_parallell = 45
 
     def left_button_press(self, obj, event):
         self.boolRotate = 1
@@ -50,7 +51,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.get_camera().Azimuth(rotate_diff)
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
-        if current <= min or current >= max:
+        if self.is_within_parallell():
             self.get_camera().SetParallelProjection(1)
         else:
             self.get_camera().SetParallelProjection(0)
@@ -87,6 +88,9 @@ class Interactor(vtk.vtkInteractorStyleUser):
     def get_boolRotate(self):
         return self.boolRotate
 
+    def get_within_parallell(self):
+        return self.within_parallell
+
     def is_in_valid_range(self, x, last_x):
         diff = last_x - x
         if self.get_max_rotate() >= self.get_current_rotate() >= self.get_min_rotate():
@@ -99,6 +103,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
             else:
                 return False
 
+    def is_within_parallell(self):
+        if abs(self.get_current_rotate()) >= self.get_within_parallell():
+            return True
+        else:
+            return False
 
 
 def graphics(host_tree, gene_tree):
