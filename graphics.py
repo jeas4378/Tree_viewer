@@ -31,16 +31,15 @@ class Interactor(vtk.vtkInteractorStyleUser):
         xy_pos = self.iren.GetEventPosition()
         x = xy_pos[0]
 
-        if self.get_boolRotate():
+        if self.get_boolRotate() and self.is_in_valid_range(x, last_x):
             self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
-        if self.get_max_rotate() > self.get_current_rotate() > self.get_min_rotate():
 
-            self.get_camera().Azimuth(last_x - x)
-            self.set_current_rotate(last_x - x)
-            self.get_camera().OrthogonalizeViewUp()
-            self.get_renWin().Render()
+        self.get_camera().Azimuth(last_x - x)
+        self.set_current_rotate(last_x - x)
+        self.get_camera().OrthogonalizeViewUp()
+        self.get_renWin().Render()
 
 
     def get_current_rotate(self):
@@ -72,6 +71,19 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def get_boolRotate(self):
         return self.boolRotate
+
+    def is_in_valid_range(self, x, last_x):
+        diff = last_x - x
+        if self.get_max_rotate() > self.get_current_rotate() > self.get_min_rotate():
+            return True
+        else:
+            if self.get_current_rotate() >= self.get_max_rotate() and diff < 0:
+                return True
+            elif self.get_current_rotate() <= self.get_min_rotate() and diff > 0:
+                return True
+            else:
+                return False
+
 
 
 def graphics(host_tree, gene_tree):
