@@ -2,6 +2,80 @@ import vtk
 import tree_node
 from vtkmodules.util import colors
 
+class Interactor(vtk.vtkInteractorStyleUser):
+
+    def __init__(self, parent=None):
+        self.iren = None
+        self.renWin = None
+        self.max_rotate = 45
+        self.min_rotate = -45
+        self.current_rotate = 0
+        self.boolRotate = 0
+        self.AddObserver("LeftButtonPressEvent", self.left_button_press)
+        self.AddObserver("LeftButtonReleaseEvent", self.left_button_release)
+        self.AddObserver("MouseMoveEvent", self.mouse_event)
+        self.camera = None
+
+    def left_button_press(self, obj, event):
+        self.boolRotate = 1
+        return
+
+    def left_button_release(self, obj, event):
+        self.boolRotate = 0
+        return
+
+    def mouse_event(self, obj, event):
+        last_xy_pos = self.iren.GetLastEventPosition()
+        last_x = last_xy_pos[0]
+
+        xy_pos = self.iren.GetEventPosition()
+        x = xy_pos[0]
+        print("x", x)
+
+        if self.get_boolRotate():
+            self.rotate(x, last_x)
+
+    def rotate(self, x, last_x):
+        print("försöker rotera")
+        print(self.get_current_rotate())
+        if self.get_max_rotate() > self.get_current_rotate() > self.get_min_rotate():
+
+            self.get_camera().Azimuth(last_x - x)
+            self.set_current_rotate(last_x - x)
+            self.get_camera().OrthogonalizeViewUp()
+            self.get_renWin().Render()
+
+
+    def get_current_rotate(self):
+        return self.current_rotate
+
+    def get_min_rotate(self):
+        return self.min_rotate
+
+    def get_max_rotate(self):
+        return self.max_rotate
+
+    def set_current_rotate(self, x):
+        self.current_rotate += x
+
+    def get_camera(self):
+        return self.camera
+
+    def get_renWin(self):
+        return self.renWin
+
+    def set_renWin(self, renWin):
+        self.renWin = renWin
+
+    def set_camera(self, camera):
+        self.camera = camera
+
+    def set_iren(self, iren):
+        self.iren = iren
+
+    def get_boolRotate(self):
+        return self.boolRotate
+
 
 def graphics(host_tree, gene_tree):
 
@@ -75,8 +149,11 @@ def graphics(host_tree, gene_tree):
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
 
-    style = vtk.vtkInteractorStyleTrackballCamera()
-    iren.SetInteractorStyle(style)
+    inter = Interactor()
+    inter.set_iren(iren)
+    inter.set_camera(renderer.GetActiveCamera())
+    inter.set_renWin(renWin)
+    iren.SetInteractorStyle(inter)
 
     iren.Initialize()
     iren.Start()
