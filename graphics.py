@@ -35,9 +35,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
             self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
+        rotate_diff = last_x - x
 
-        self.get_camera().Azimuth(last_x - x)
-        self.set_current_rotate(last_x - x)
+        self.get_camera().Azimuth(rotate_diff)
+        self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
         self.get_renWin().Render()
 
