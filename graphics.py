@@ -36,6 +36,16 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def rotate(self, x, last_x):
         rotate_diff = last_x - x
+        current = self.get_current_rotate()
+        max = self.get_max_rotate()
+        min = self.get_min_rotate()
+        
+        if (current + rotate_diff) > max:
+            clamp = (current + rotate_diff) - max
+            rotate_diff -= clamp
+        elif (current + rotate_diff) < min:
+            clamp = (current + rotate_diff) - min
+            rotate_diff -= clamp
 
         self.get_camera().Azimuth(rotate_diff)
         self.set_current_rotate(rotate_diff)
@@ -75,7 +85,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def is_in_valid_range(self, x, last_x):
         diff = last_x - x
-        if self.get_max_rotate() > self.get_current_rotate() > self.get_min_rotate():
+        if self.get_max_rotate() >= self.get_current_rotate() >= self.get_min_rotate():
             return True
         else:
             if self.get_current_rotate() >= self.get_max_rotate() and diff < 0:
