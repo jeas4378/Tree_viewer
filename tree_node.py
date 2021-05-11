@@ -294,15 +294,71 @@ class Tree:
         width /= 4
         if bool_host:
             if root.get_left_child():
-                self.__rec_initial_node_placement(root.get_left_child(), self.get_x_offset(), root.get_y(), -width)
+                self.__rec_initial_node_placement(root.get_left_child(),
+                                                  self.get_x_offset(),
+                                                  root.get_y(),
+                                                  -width,
+                                                  bool_host)
             if root.get_right_child():
-                self.__rec_initial_node_placement(root.get_right_child(), self.get_x_offset(), root.get_y(), width)
+                self.__rec_initial_node_placement(root.get_right_child(),
+                                                  self.get_x_offset(),
+                                                  root.get_y(),
+                                                  width,
+                                                  bool_host)
         else:
             if root.get_left_child():
-                self.__rec_initial_node_placement(root.get_left_child(), -width, root.get_y(), self.get_z_offset())
+                self.__rec_initial_node_placement(root.get_left_child(),
+                                                  -width,
+                                                  root.get_y(),
+                                                  self.get_z_offset(),
+                                                  bool_host)
             if root.get_right_child():
-                self.__rec_initial_node_placement(root.get_right_child(), width, root.get_y(), self.get_z_offset())
+                self.__rec_initial_node_placement(root.get_right_child(),
+                                                  width,
+                                                  root.get_y(),
+                                                  self.get_z_offset(),
+                                                  bool_host)
 
-    def __rec_initial_node_placement(self, node, x, y, z):
-        pass
+    def __rec_initial_node_placement(self, node, x, y, z, bool_host):
+
+        width = self.get_tree_width() / 2
+        node_height = node.get_height()
+        width = (width / (2 ** (node_height + 1)))
+
+        if bool_host:
+            y = y - node.get_distance()
+        node.set_y(y)
+        node.set_x(x)
+        node.set_z(z)
+
+        if bool_host:
+            if node.get_left_child():
+                self.__rec_initial_node_placement(node.get_left_child(),
+                                                  x,
+                                                  y,
+                                                  z - width,
+                                                  bool_host)
+
+            if node.get_right_child():
+                self.__rec_initial_node_placement(node.get_right_child(),
+                                                  x,
+                                                  y,
+                                                  z + width,
+                                                  bool_host)
+        else:
+            if node.get_left_child():
+                self.__rec_initial_node_placement(node.get_left_child(),
+                                                  x - width,
+                                                  y - 0.1,
+                                                  z,
+                                                  bool_host)
+
+            if node.get_right_child():
+                self.__rec_initial_node_placement(node.get_right_child(),
+                                                  x + width,
+                                                  y - 0.1,
+                                                  z,
+                                                  bool_host)
+
+
 
