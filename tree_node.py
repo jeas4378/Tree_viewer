@@ -17,6 +17,7 @@ class Node:
         self.y = 0.0
         self.z = 0.0
         self.height = 0
+        self.placed = False
 
     def set_left_child(self, node):
         self.left_child = node
@@ -100,6 +101,12 @@ class Node:
     def get_height(self):
         return self.height
 
+    def get_placed(self):
+        return self.placed
+
+    def set_placed(self, bool):
+        self.placed = bool
+
     def __iter__(self):
         yield self
         if self.left_child:
@@ -119,7 +126,8 @@ class Tree:
         self.z_offset = 0
         self.tree_width = 0
         self.node_size = 0.1
-        self.leafs = []
+        self.leaves = []
+        self.host = False
 
     def get_root(self):
         return self.root
@@ -160,10 +168,16 @@ class Tree:
         return self.node_size
 
     def add_leaf(self, node):
-        self.leafs.append(node)
+        self.leaves.append(node)
 
-    def get_leafs(self):
-        return self.leafs
+    def get_leaves(self):
+        return self.leaves
+
+    def get_host(self):
+        return self.host
+
+    def set_host(self, val):
+        self.host = val
 
     def create_tree_width(self):
         height = self.get_height()
@@ -180,6 +194,9 @@ class Tree:
         root = self.get_root()
 
         self.__rec_tree(root, parser_data, 0)
+
+    def node_placement(self, host_tree):
+        self.initial_node_placement()
 
     def __rec_tree(self, node, parser_data, height):
 
@@ -203,6 +220,8 @@ class Tree:
         if p.is_numerical(parser_data[0]):
             val = parser_data[0][1:]
             node.set_distance(val)
+            if not self.get_host():
+                self.set_host(True)
             parser_data.pop(0)
 
         if parser_data[0][0] == '&':
@@ -221,144 +240,122 @@ class Tree:
 
         return node, parser_data
 
-    def node_placement(self, host_tree=None):
-        root = self.get_root()
-        if host_tree is None:
-            root.set_x(self.get_x_offset())
-            root.set_y(1)
-            width = (2**self.get_height())*self.get_node_size()+(self.get_node_size())
-            width /= 4
-            self.__rec_node_placement(root.get_left_child(), self.get_x_offset(), root.get_y(), -width, None)
-            self.__rec_node_placement(root.get_right_child(), self.get_x_offset(), root.get_y(), width, None)
-        else:
-            ac = root.get_ac()
-            if ac:
-                host_key = ac[0]
-                host_node = host_tree.get_tree_info(host_key)
-                z = host_node.get_z()
-                y = host_node.get_y()
-                root.set_z(z)
-                root.set_y(y)
-            else:
-                root.set_y(1.2)
-            width = self.get_tree_width()
-            width /= 4
-            self.__rec_node_placement(root.get_left_child(), -width, root.get_y() - 0.1, self.get_z_offset(), host_tree)
-            self.__rec_node_placement(root.get_right_child(), width, root.get_y() - 0.1, self.get_z_offset(), host_tree)
-
-    def __rec_node_placement(self, node, x, y, z, host_tree):
-
-        if host_tree is None:
-            node.set_x(x)
-            node.set_z(z)
-            y = y - node.get_distance()
-            node.set_y(y)
-            width = self.get_tree_width() / 2
-            node_height = node.get_height()
-            width = (width / (2 ** (node_height + 1)))
-            if node.get_left_child() is not None:
-                self.__rec_node_placement(node.get_left_child(), x, node.get_y(), z - width, host_tree)
-            if node.get_right_child() is not None:
-                self.__rec_node_placement(node.get_right_child(), x, node.get_y(), z + width, host_tree)
-        else:
-            ac = node.get_ac()
-            if ac:
-                host_key = ac[0]
-                host_node = host_tree.get_tree_info(host_key)
-                z = host_node.get_z()
-                y = host_node.get_y()
-            node.set_z(z)
-            node.set_y(y)
-            node.set_x(x)
-
-            width = self.get_tree_width() / 2
-            node_height = node.get_height()
-            width = (width / (2**(node_height+1)))
-            if node.get_left_child() is not None:
-                self.__rec_node_placement(node.get_left_child(), x - width, node.get_y() - 0.1, z,
-                                          host_tree)
-            if node.get_right_child() is not None:
-                self.__rec_node_placement(node.get_right_child(), x + width, node.get_y() - 0.1, z,
-                                          host_tree)
-
-    def initial_node_placement(self, bool_host):
+    def initial_node_placement(self):
 
         root = self.get_root()
 
-        if bool_host:
+        if self.get_host():
             root.set_x(self.get_x_offset())
         else:
             root.set_z(self.get_z_offset())
         root.set_y(1)
         width = (2 ** self.get_height()) * self.get_node_size() + (self.get_node_size())
         width /= 4
-        if bool_host:
+        if self.get_host():
             if root.get_left_child():
                 self.__rec_initial_node_placement(root.get_left_child(),
-                                                  self.get_x_offset(),
+                                                  0,
                                                   root.get_y(),
-                                                  -width,
-                                                  bool_host)
+                                                  -width)
             if root.get_right_child():
                 self.__rec_initial_node_placement(root.get_right_child(),
-                                                  self.get_x_offset(),
+                                                  0,
                                                   root.get_y(),
-                                                  width,
-                                                  bool_host)
+                                                  width)
         else:
             if root.get_left_child():
                 self.__rec_initial_node_placement(root.get_left_child(),
                                                   -width,
                                                   root.get_y(),
-                                                  self.get_z_offset(),
-                                                  bool_host)
+                                                  0)
             if root.get_right_child():
                 self.__rec_initial_node_placement(root.get_right_child(),
                                                   width,
                                                   root.get_y(),
-                                                  self.get_z_offset(),
-                                                  bool_host)
+                                                  0)
 
-    def __rec_initial_node_placement(self, node, x, y, z, bool_host):
+    def __rec_initial_node_placement(self, node, x, y, z):
 
         width = self.get_tree_width() / 2
         node_height = node.get_height()
         width = (width / (2 ** (node_height + 1)))
 
-        if bool_host:
+        if self.get_host():
             y = y - node.get_distance()
         node.set_y(y)
         node.set_x(x)
         node.set_z(z)
 
-        if bool_host:
+        if self.get_host():
             if node.get_left_child():
                 self.__rec_initial_node_placement(node.get_left_child(),
                                                   x,
                                                   y,
-                                                  z - width,
-                                                  bool_host)
+                                                  z - width)
 
             if node.get_right_child():
                 self.__rec_initial_node_placement(node.get_right_child(),
                                                   x,
                                                   y,
-                                                  z + width,
-                                                  bool_host)
+                                                  z + width)
         else:
             if node.get_left_child():
                 self.__rec_initial_node_placement(node.get_left_child(),
                                                   x - width,
                                                   y - 0.1,
-                                                  z,
-                                                  bool_host)
+                                                  z)
 
             if node.get_right_child():
                 self.__rec_initial_node_placement(node.get_right_child(),
                                                   x + width,
                                                   y - 0.1,
-                                                  z,
-                                                  bool_host)
+                                                  z)
 
+    def place_nodes(self):
+        leaves = self.get_leaves()
+        nodes = self.merge_sort(leaves)
 
+    def merge_sort(self, nodes):
+        length = len(nodes)
+        nodes1 = []
+        nodes2 = []
+        if length > 1:
+            if (length % 2) == 0:
+                nodes1 = self.merge_sort(nodes[:length/2])
+                nodes2 = self.merge_sort(nodes[length/2:])
+            else:
+                nodes1 = self.merge_sort(nodes[:(length+1) / 2])
+                nodes2 = self.merge_sort(nodes[(length+1) / 2:])
 
+            nodes = self.merge(nodes1, nodes2)
+
+        return nodes
+
+    def merge(self, nodes1, nodes2):
+        nodes = []
+        while(nodes1 and nodes2):
+            elem1 = nodes1[0]
+            elem2 = nodes2[0]
+            if self.get_host():
+                if abs(elem1.get_z()) > abs(elem2.get_z()):
+                    nodes.append(elem1)
+                    nodes1.pop(0)
+                else:
+                    nodes.append(elem2)
+                    nodes2.pop(0)
+            else:
+                if abs(elem1.get_x()) > abs(elem2.get_x()):
+                    nodes.append(elem1)
+                    nodes1.pop(0)
+                else:
+                    nodes.append(elem2)
+                    nodes2.pop(0)
+
+        if nodes1:
+            for elem in nodes1:
+                nodes.append(elem)
+        else:
+            for elem in nodes2:
+                nodes.append(elem)
+
+        return nodes
