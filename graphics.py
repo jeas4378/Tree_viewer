@@ -1,6 +1,5 @@
 import vtk
 import interactor
-import tree_node
 
 CUBE = "cube"
 CONE = "cone"

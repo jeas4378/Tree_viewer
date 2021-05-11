@@ -226,7 +226,7 @@ class Tree:
         if host_tree is None:
             root.set_x(self.get_x_offset())
             root.set_y(1)
-            width = self.get_tree_width()
+            width = (2**self.get_height())*self.get_node_size()+(self.get_node_size())
             width /= 4
             self.__rec_node_placement(root.get_left_child(), self.get_x_offset(), root.get_y(), -width, None)
             self.__rec_node_placement(root.get_right_child(), self.get_x_offset(), root.get_y(), width, None)
@@ -261,9 +261,6 @@ class Tree:
             if node.get_right_child() is not None:
                 self.__rec_node_placement(node.get_right_child(), x, node.get_y(), z + width, host_tree)
         else:
-            id = node.get_id()
-            if node.get_id() == '2':
-                pass
             ac = node.get_ac()
             if ac:
                 host_key = ac[0]
@@ -283,4 +280,29 @@ class Tree:
             if node.get_right_child() is not None:
                 self.__rec_node_placement(node.get_right_child(), x + width, node.get_y() - 0.1, z,
                                           host_tree)
+
+    def initial_node_placement(self, bool_host):
+
+        root = self.get_root()
+
+        if bool_host:
+            root.set_x(self.get_x_offset())
+        else:
+            root.set_z(self.get_z_offset())
+        root.set_y(1)
+        width = (2 ** self.get_height()) * self.get_node_size() + (self.get_node_size())
+        width /= 4
+        if bool_host:
+            if root.get_left_child():
+                self.__rec_initial_node_placement(root.get_left_child(), self.get_x_offset(), root.get_y(), -width)
+            if root.get_right_child():
+                self.__rec_initial_node_placement(root.get_right_child(), self.get_x_offset(), root.get_y(), width)
+        else:
+            if root.get_left_child():
+                self.__rec_initial_node_placement(root.get_left_child(), -width, root.get_y(), self.get_z_offset())
+            if root.get_right_child():
+                self.__rec_initial_node_placement(root.get_right_child(), width, root.get_y(), self.get_z_offset())
+
+    def __rec_initial_node_placement(self, node, x, y, z):
+        pass
 
