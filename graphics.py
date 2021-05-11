@@ -3,6 +3,12 @@ import interactor
 import tree_node
 from vtkmodules.util import colors
 
+CUBE = "cube"
+CONE = "cone"
+GREEN = "Green"
+BLUE = "Blue"
+WHITE = "White"
+
 
 def graphics(host_tree, gene_tree):
 
@@ -92,6 +98,43 @@ def graphics(host_tree, gene_tree):
         # rotate the active camera by one degree
       #  renderer.GetActiveCamera().Azimuth(0.1)
 
+
+def create_graphic_nodes(tree, renderer, shape, color):
+
+    colors = vtk.vtkNamedColors()
+
+    root = tree.get_root()
+
+    graphic_obj = None
+
+    for node in root:
+        if shape == CONE:
+            graphic_obj = vtk.vtkConeSource()
+            graphic_obj.SetHeight(tree.get_node_size())
+            graphic_obj.SetRadius(tree.get_node_size() / 3)
+            graphic_obj.SetResolution(10)
+            graphic_obj.SetDirection(0, 1, 0)
+        elif shape == CUBE:
+            graphic_obj = vtk.vtkCubeSource()
+            gene_node_size = tree.get_node_size() / 2
+            graphic_obj.SetXLength(gene_node_size)
+            graphic_obj.SetYLength(gene_node_size)
+            graphic_obj.SetZLength(gene_node_size)
+
+        graphic_mapper = vtk.vtkPolyDataMapper()
+        graphic_mapper.SetInputConnection(graphic_obj.GetOutputPort())
+
+        graphic_property = vtk.vtkProperty()
+        graphic_property.SetColor(colors.GetColor3d(color))
+        graphic_property.SetDiffuse(0.7)
+        graphic_property.SetSpecular(0.4)
+        graphic_property.SetSpecularPower(20)
+
+        actor = vtk.vtkActor()
+        actor.SetMapper(graphic_mapper)
+        actor.SetProperty(graphic_property)
+        actor.SetPosition(node.get_x(), node.get_y(), node.get_z())
+        renderer.AddActor(actor)
 
 def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
 
