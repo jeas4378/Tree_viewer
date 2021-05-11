@@ -2,7 +2,7 @@ import vtk
 
 class Interactor(vtk.vtkInteractorStyleUser):
 
-    def __init__(self, parent=None):
+    def __init__(self, color="Blue", parent=None):
         self.iren = None
         self.renWin = None
         self.max_rotate = 45
@@ -18,6 +18,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.last_picked_property = vtk.vtkProperty()
         self.renderer = None
         self.colors = vtk.vtkNamedColors()
+        self.color = color
 
     def left_button_press(self, obj, event):
         self.boolRotate = 1
@@ -40,7 +41,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
             # restore it next time
             self.last_picked_property.DeepCopy(self.NewPickedActor.GetProperty())
             # Highlight the picked actor by changing its properties
-            self.NewPickedActor.GetProperty().SetColor(self.colors.GetColor3d('Blue'))
+            self.NewPickedActor.GetProperty().SetColor(self.colors.GetColor3d(self.color))
             self.NewPickedActor.GetProperty().SetDiffuse(1.0)
             self.NewPickedActor.GetProperty().SetSpecular(0.0)
             self.NewPickedActor.GetProperty().EdgeVisibilityOn()

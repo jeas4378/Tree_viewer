@@ -1,60 +1,25 @@
 import vtk
 import interactor
 import tree_node
-from vtkmodules.util import colors
 
 CUBE = "cube"
 CONE = "cone"
 GREEN = "Green"
 BLUE = "Blue"
 WHITE = "White"
+RED = "Red"
+YELLOW = "Yellow"
 
+colors = vtk.vtkNamedColors()
 
 def graphics(host_tree, gene_tree):
+    renderer = vtk.vtkRenderer()
 
-    colors = vtk.vtkNamedColors()
-
-    host_graphic_obj = vtk.vtkConeSource()
-    host_graphic_obj.SetHeight(host_tree.get_node_size())
-    host_graphic_obj.SetRadius(host_tree.get_node_size() / 3)
-    host_graphic_obj.SetResolution(10)
-    host_graphic_obj.SetDirection(0, 1, 0)
-
-    gene_graphic_obj = vtk.vtkCubeSource()
-    gene_node_size = gene_tree.get_node_size() / 2
-    gene_graphic_obj.SetXLength(gene_node_size)
-    gene_graphic_obj.SetYLength(gene_node_size)
-    gene_graphic_obj.SetZLength(gene_node_size)
-
-    host_graphic_mapper = vtk.vtkPolyDataMapper()
-    gene_graphic_mapper = vtk.vtkPolyDataMapper()
-
-    host_graphic_mapper.SetInputConnection(host_graphic_obj.GetOutputPort())
-    gene_graphic_mapper.SetInputConnection(gene_graphic_obj.GetOutputPort())
-
-    host_graphic_property = vtk.vtkProperty()
-    host_graphic_property.SetColor(colors.GetColor3d("Green"))
-    host_graphic_property.SetDiffuse(0.7)
-    host_graphic_property.SetSpecular(0.4)
-    host_graphic_property.SetSpecularPower(20)
-
-    host_actors = graphics_node_placement(host_tree, host_graphic_mapper, host_graphic_property)
-
-    gene_graphic_property = vtk.vtkProperty()
-    gene_graphic_property.SetColor(colors.GetColor3d("Red"))
-    gene_graphic_property.SetDiffuse(0.7)
-    gene_graphic_property.SetSpecular(0.4)
-    gene_graphic_property.SetSpecularPower(20)
-
-    gene_actors = graphics_node_placement(gene_tree, gene_graphic_mapper, gene_graphic_property)
+    create_graphic_nodes(host_tree, renderer, CONE, GREEN)
+    create_graphic_nodes(gene_tree, renderer, CUBE, RED)
 
     host_line_actor = graphics_line_placement(host_tree)
     gene_line_actor = graphics_line_placement(gene_tree)
-
-    renderer = vtk.vtkRenderer()
-
-    renderer = graphics_add_to_renderer(renderer, host_actors)
-    renderer = graphics_add_to_renderer(renderer, gene_actors)
 
     renderer.AddActor(host_line_actor)
     renderer.AddActor(gene_line_actor)
@@ -82,11 +47,12 @@ def graphics(host_tree, gene_tree):
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
 
-    inter = interactor.Interactor()
+    inter = interactor.Interactor(YELLOW)
     inter.set_iren(iren)
     inter.set_camera(renderer.GetActiveCamera())
     inter.set_renWin(renWin)
     inter.set_renderer(renderer)
+
     iren.SetInteractorStyle(inter)
 
     iren.Initialize()
@@ -100,8 +66,6 @@ def graphics(host_tree, gene_tree):
 
 
 def create_graphic_nodes(tree, renderer, shape, color):
-
-    colors = vtk.vtkNamedColors()
 
     root = tree.get_root()
 
