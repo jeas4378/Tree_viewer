@@ -128,6 +128,8 @@ class Tree:
         self.node_size = 0.1
         self.leaves = []
         self.host = False
+        self.max = 0.0
+        self.min = 0.0
 
     def get_root(self):
         return self.root
@@ -179,10 +181,29 @@ class Tree:
     def set_host(self, val):
         self.host = val
 
+    def get_max(self):
+        return self.max
+
+    def set_max(self, val):
+        self.max = val
+
+    def get_min(self):
+        return self.min
+
+    def set_min(self, val):
+        self.min = val
+
+    def set_min_max(self, val):
+        if val > self.get_max():
+            self.set_max(val)
+        elif val < self.get_min():
+            self.set_min(val)
+
     def create_tree_width(self):
-        height = self.get_height()
-        if height > 0:
-            self.tree_width = (2**height)*self.get_node_size()+(self.get_node_size()*5)
+        if self.get_min() != 0 and self.get_max() != 0:
+            max = self.get_max()
+            min = self.get_min()
+            self.tree_width = max - min
 
     def get_tree_width(self):
         if self.tree_width == 0:
@@ -195,8 +216,15 @@ class Tree:
 
         self.__rec_tree(root, parser_data, 0)
 
-    def node_placement(self, host_tree):
-        self.initial_node_placement()
+    def offset_tree(self, val):
+        root = self.get_root()
+        for node in root:
+            if self.get_host():
+                node.set_x(val)
+            else:
+                node.set_z(val)
+    # def node_placement(self, host_tree):
+    #     self.initial_node_placement()
 
     def __rec_tree(self, node, parser_data, height):
 
@@ -315,7 +343,6 @@ class Tree:
         leaves = self.get_leaves()
         nodes = self.merge_sort(leaves)
         self.adjust_nodes(nodes)
-        pass
 
     def merge_sort(self, nodes):
         length = len(nodes)
@@ -388,6 +415,7 @@ class Tree:
                     else:
                         node.set_z(-offset/2)
                         neg_axis.append(node)
+                self.set_min_max(node.get_z())
             #If the tree is a reconciled gene-tree.
             else:
                 if node.get_x() > 0:
@@ -406,6 +434,7 @@ class Tree:
                     else:
                         node.set_x(-offset/2)
                         neg_axis.append(node)
+                self.set_min_max(node.get_x())
 
         while nodes:
             nodes = self.__adjust_nodes_parents(nodes)
@@ -439,3 +468,17 @@ class Tree:
             offset = (max_val + min_val) / 2
             pos = offset
             parent.set_x(pos)
+
+    def match_against_host(self, tree):
+        if not self.get_host():
+            root = self.get_root()
+
+            for node in root:
+                ac = node.get_ac()
+                if ac:
+                    host_key = ac[0]
+                    host_node = tree.get_tree_info(host_key)
+                    y = host_node.get_y()
+                    z = host_node.get_z()
+                    node.set_y(y)
+                    node.set_z(z)
