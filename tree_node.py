@@ -266,12 +266,12 @@ class Tree:
             if root.get_left_child():
                 self.__rec_initial_node_placement(root.get_left_child(),
                                                   -width,
-                                                  root.get_y(),
+                                                  root.get_y() - 0.1,
                                                   0)
             if root.get_right_child():
                 self.__rec_initial_node_placement(root.get_right_child(),
                                                   width,
-                                                  root.get_y(),
+                                                  root.get_y() - 0.1,
                                                   0)
 
     def __rec_initial_node_placement(self, node, x, y, z):
@@ -378,7 +378,7 @@ class Tree:
                         node.set_z(prev_node.get_z() + offset)
                         pos_axis.append(node)
                     else:
-                        node.set_z(offset)
+                        node.set_z(offset/2)
                         pos_axis.append(node)
                 else:
                     if neg_axis:
@@ -386,7 +386,7 @@ class Tree:
                         node.set_z(prev_node.get_z() - offset)
                         neg_axis.append(node)
                     else:
-                        node.set_z(-offset)
+                        node.set_z(-offset/2)
                         neg_axis.append(node)
             #If the tree is a reconciled gene-tree.
             else:
@@ -396,7 +396,7 @@ class Tree:
                         node.set_x(prev_node.get_x() + offset)
                         pos_axis.append(node)
                     else:
-                        node.set_x(offset)
+                        node.set_x(offset/2)
                         pos_axis.append(node)
                 else:
                     if neg_axis:
@@ -404,7 +404,7 @@ class Tree:
                         node.set_x(prev_node.get_x() - offset)
                         neg_axis.append(node)
                     else:
-                        node.set_x(-offset)
+                        node.set_x(-offset/2)
                         neg_axis.append(node)
 
         while nodes:
@@ -428,10 +428,10 @@ class Tree:
         child_left = parent.get_left_child()
         child_right = parent.get_right_child()
         if self.get_host():
-            sort = sorted([abs(child_left.get_z()), abs(child_right.get_z())])
+            sort = sorted([child_left.get_z(), child_right.get_z()])
             min_val, max_val = sort[0], sort[-1]
-            offset = (max_val - min_val) / 2
-            pos = child_left.get_z() + offset
+            offset = (max_val + min_val) / 2
+            pos = offset
             parent.set_z(pos)
         else:
             sort = sorted([child_left.get_x(), child_right.get_x()])
