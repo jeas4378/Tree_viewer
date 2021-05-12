@@ -104,8 +104,8 @@ class Node:
     def get_placed(self):
         return self.placed
 
-    def set_placed(self, bool):
-        self.placed = bool
+    def set_placed(self, val):
+        self.placed = val
 
     def __iter__(self):
         yield self
@@ -314,6 +314,8 @@ class Tree:
     def place_nodes(self):
         leaves = self.get_leaves()
         nodes = self.merge_sort(leaves)
+        self.adjust_nodes(nodes)
+        pass
 
     def merge_sort(self, nodes):
         length = len(nodes)
@@ -321,11 +323,13 @@ class Tree:
         nodes2 = []
         if length > 1:
             if (length % 2) == 0:
-                nodes1 = self.merge_sort(nodes[:length/2])
-                nodes2 = self.merge_sort(nodes[length/2:])
+                cut = length // 2
+                nodes1 = self.merge_sort(nodes[:cut])
+                nodes2 = self.merge_sort(nodes[cut:])
             else:
-                nodes1 = self.merge_sort(nodes[:(length+1) / 2])
-                nodes2 = self.merge_sort(nodes[(length+1) / 2:])
+                cut = (length + 1) // 2
+                nodes1 = self.merge_sort(nodes[:cut])
+                nodes2 = self.merge_sort(nodes[cut:])
 
             nodes = self.merge(nodes1, nodes2)
 
@@ -337,14 +341,14 @@ class Tree:
             elem1 = nodes1[0]
             elem2 = nodes2[0]
             if self.get_host():
-                if abs(elem1.get_z()) > abs(elem2.get_z()):
+                if abs(elem1.get_z()) < abs(elem2.get_z()):
                     nodes.append(elem1)
                     nodes1.pop(0)
                 else:
                     nodes.append(elem2)
                     nodes2.pop(0)
             else:
-                if abs(elem1.get_x()) > abs(elem2.get_x()):
+                if abs(elem1.get_x()) < abs(elem2.get_x()):
                     nodes.append(elem1)
                     nodes1.pop(0)
                 else:
@@ -359,3 +363,79 @@ class Tree:
                 nodes.append(elem)
 
         return nodes
+
+    def adjust_nodes(self, nodes):
+        pos_axis = []
+        neg_axis = []
+        node_size = self.get_node_size()
+        offset = node_size
+        for node in nodes:
+            #If the tree is a host-tree.
+            if self.get_host():
+                if node.get_z() > 0:
+                    if pos_axis:
+                        prev_node = pos_axis[-1]
+                        node.set_z(prev_node.get_z() + offset)
+                        pos_axis.append(node)
+                    else:
+                        node.set_z(offset)
+                        pos_axis.append(node)
+                else:
+                    if neg_axis:
+                        prev_node = neg_axis[-1]
+                        node.set_z(prev_node.get_z() - offset)
+                        neg_axis.append(node)
+                    else:
+                        node.set_z(-offset)
+                        neg_axis.append(node)
+            #If the tree is a reconciled gene-tree.
+            else:
+                if node.get_x() > 0:
+                    if pos_axis:
+                        prev_node = pos_axis[-1]
+                        node.set_x(prev_node.get_x() + offset)
+                        pos_axis.append(node)
+                    else:
+                        node.set_x(offset)
+                        pos_axis.append(node)
+                else:
+                    if neg_axis:
+                        prev_node = neg_axis[-1]
+                        node.set_x(prev_node.get_x() - offset)
+                        neg_axis.append(node)
+                    else:
+                        node.set_x(-offset)
+                        neg_axis.append(node)
+
+        while nodes:
+            nodes = self.__adjust_nodes_parents(nodes)
+
+    def __adjust_nodes_parents(self, nodes):
+        parents = []
+
+        for node in nodes:
+            parent = node.get_parent()
+            if parent:
+                if parent not in parents:
+                    self.__parent_placement(parent)
+                    parents.append(parent)
+            else:
+                self.__parent_placement(node)
+
+        return parents
+
+    def __parent_placement(self, parent):
+        child_left = parent.get_left_child()
+        child_right = parent.get_right_child()
+        if self.get_host():
+            sort = sorted([abs(child_left.get_z()), abs(child_right.get_z())])
+            min_val, max_val = sort[0], sort[-1]
+            offset = (max_val - min_val) / 2
+            pos = child_left.get_z() + offset
+            parent.set_z(pos)
+        else:
+            sort = sorted([child_left.get_x(), child_right.get_x()])
+            min_val, max_val = sort[0], sort[-1]
+            offset = (max_val + min_val) / 2
+            pos = offset
+            parent.set_x(pos)
