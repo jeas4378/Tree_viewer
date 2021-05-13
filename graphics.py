@@ -37,12 +37,10 @@ def graphics(host_tree, gene_tree):
     #print(host_tree.get_x_offset(), host_tree.get_z_offset())
     #print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
 
-    if abs(host_tree.get_x_offset()) < abs(gene_tree.get_z_offset()):
-        offset = z + (host_tree.get_node_size() * 15)
-        camera.SetPosition(-offset, 0.5, offset)
-    else:
-        offset = x + (gene_tree.get_node_size() * 15)
-        camera.SetPosition(-offset, 0.5, offset)
+    node_distance = (gene_tree.get_node_size() * 25)
+    offset_z = z + node_distance
+    offset_x = x + node_distance
+    camera.SetPosition(offset_x, 0.5, -offset_z)
 
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
@@ -178,7 +176,7 @@ def calculate_focal_point(tree1, tree2):
     tree2_min = tree2.get_min()
     tree2_max = tree2.get_max()
 
-    x = (tree1_max - tree1_min) / 2
-    z = (tree2_max - tree2_min) / 2
+    z = (tree1_max - tree1_min) / 2
+    x = (tree2_max - tree2_min) / 2
 
-    return z, x
+    return x, z

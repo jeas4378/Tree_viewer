@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     offset_host = tree_gene.get_tree_width()
     #offset_host /= 2
-    tree_host.offset_tree(-offset_host/2)
+    tree_host.offset_tree(offset_host)
 
     offset_gene = tree_host.get_tree_width()
     #offset_gene /= 2
