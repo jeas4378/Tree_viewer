@@ -395,7 +395,7 @@ class Tree:
         pos_axis = []
         neg_axis = []
         node_size = self.get_node_size()
-        offset = node_size
+        offset = node_size*1.2
         for node in nodes:
             #If the tree is a host-tree.
             if self.get_host():
@@ -472,6 +472,10 @@ class Tree:
     def match_against_host(self, tree):
         if not self.get_host():
             root = self.get_root()
+            root_host = tree.get_root()
+
+            root.set_y(root_host.get_y())
+            root.set_z(root_host.get_z())
 
             for node in root:
                 ac = node.get_ac()
@@ -482,7 +486,6 @@ class Tree:
                     z = host_node.get_z()
                     node.set_y(y)
                     node.set_z(z)
-
 
     def height_adjustment(self):
         root = self.get_root()
