@@ -482,3 +482,16 @@ class Tree:
                     z = host_node.get_z()
                     node.set_y(y)
                     node.set_z(z)
+
+
+    def height_adjustment(self):
+        root = self.get_root()
+        for node in root:
+            parent = node.get_parent()
+            if parent:
+                current_height = node.get_y()
+                if parent.get_y() <= current_height:
+                    max_height = max(node.get_left_child().get_y(),
+                                     node.get_right_child().get_y())
+                    height = (parent.get_y() + max_height) / 2
+                    node.set_y(height)
