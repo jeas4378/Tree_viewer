@@ -2,8 +2,8 @@ import tree_node as tn
 import graphics as g
 
 if __name__ == '__main__':
-    tree_host = tn.Tree('ex_host.txt')
-    tree_gene = tn.Tree('ex_gene.txt')
+    tree_host = tn.Tree('cyano.stree')
+    tree_gene = tn.Tree('cyano1.rtree')
 
     tree_host.create_tree()
     tree_gene.create_tree()
@@ -23,11 +23,11 @@ if __name__ == '__main__':
 
     offset_host = tree_gene.get_tree_width()
     #offset_host /= 2
-    tree_host.offset_tree(offset_host)
+    tree_host.offset_tree(-offset_host/2)
 
     offset_gene = tree_host.get_tree_width()
     #offset_gene /= 2
-    tree_gene.offset_tree(offset_gene)
+    tree_gene.offset_tree(-offset_gene)
 
     tree_gene.match_against_host(tree_host)
    # tree_gene.node_placement(tree_host)

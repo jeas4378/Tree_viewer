@@ -36,12 +36,12 @@ def graphics(host_tree, gene_tree):
     #print(host_tree.get_x_offset(), host_tree.get_z_offset())
     #print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
 
-    if abs(host_tree.get_x_offset()) > abs(gene_tree.get_z_offset()):
+    if abs(host_tree.get_x_offset()) < abs(gene_tree.get_z_offset()):
         offset = host_tree.get_x_offset() + (host_tree.get_node_size() * 20)
-        camera.SetPosition(offset, 0.5, offset)
+        camera.SetPosition(-offset, 0.5, offset)
     else:
         offset = gene_tree.get_z_offset() + (gene_tree.get_node_size() * 20)
-        camera.SetPosition(offset, 0.5, offset)
+        camera.SetPosition(-offset, 0.5, offset)
 
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
