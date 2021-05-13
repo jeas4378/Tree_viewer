@@ -13,7 +13,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.AddObserver("LeftButtonReleaseEvent", self.left_button_release)
         self.AddObserver("MouseMoveEvent", self.mouse_event)
         self.camera = None
-        self.within_parallell = 46
+        self.within_parallell = 45
         self.last_picked_actor = None
         self.last_picked_property = vtk.vtkProperty()
         self.renderer = None
