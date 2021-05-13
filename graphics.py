@@ -37,7 +37,12 @@ def graphics(host_tree, gene_tree):
     #print(host_tree.get_x_offset(), host_tree.get_z_offset())
     #print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
 
-    node_distance = (gene_tree.get_node_size() * 30)
+    max_width = max(abs(host_tree.get_tree_width()), abs(gene_tree.get_tree_width()))
+    if max_width > 1:
+        node_distance = max_width * 1.1
+    else:
+        node_distance = 2
+    #node_distance = (gene_tree.get_node_size() * 30)
     offset_z = z + node_distance
     offset_x = (x/4) + node_distance
     camera.SetPosition(-offset_x, 0.5, offset_z)
