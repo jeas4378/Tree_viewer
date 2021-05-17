@@ -10,4 +10,4 @@ After that you run the tool by typing
 
 	python3 [host tree] [reconciled gene tree] [OPTIONAL: An integer]
 	
-The optional argument determines at what angle the view will become ortographical. '45' will mean that the ortograhical view only activate at the maximum positive or negative rotation. A value >45 means that the ortographical view is disabled and a value of <=0 means that the ortographical view is always activated.
+The optional argument determines at what angle the view will become ortographical. The default value of 45 means that the ortograhical view only activate at the maximum positive or negative rotation. A value >45 means that the ortographical view is disabled and a value of <=0 means that the ortographical view is always activated.
