@@ -8,17 +8,23 @@ BLUE = "Blue"
 WHITE = "White"
 RED = "Red"
 YELLOW = "Yellow"
+GRAY = "Gray"
+LIGHT_SALMON = "light_salmon"
+LIME_GREEN = "lime_green"
+
 
 colors = vtk.vtkNamedColors()
 
-def graphics(host_tree, gene_tree):
+
+def graphics(host_tree, gene_tree, ortographical_degree):
+
     renderer = vtk.vtkRenderer()
 
     create_graphic_nodes(host_tree, renderer, CONE, GREEN)
     create_graphic_nodes(gene_tree, renderer, CUBE, RED)
 
-    host_line_actor = graphics_line_placement(host_tree)
-    gene_line_actor = graphics_line_placement(gene_tree)
+    host_line_actor = graphics_line_placement(host_tree, LIME_GREEN)
+    gene_line_actor = graphics_line_placement(gene_tree, LIGHT_SALMON)
 
     renderer.AddActor(host_line_actor)
     renderer.AddActor(gene_line_actor)
@@ -32,7 +38,8 @@ def graphics(host_tree, gene_tree):
 
     camera = renderer.GetActiveCamera()
     x, z = calculate_focal_point(host_tree, gene_tree)
-    camera.SetFocalPoint(-x/4, 0.5, z)
+    x /= 4
+    camera.SetFocalPoint(-x, 0.5, z)
 
     #print(host_tree.get_x_offset(), host_tree.get_z_offset())
     #print(gene_tree.get_x_offset(), gene_tree.get_z_offset())
@@ -44,13 +51,13 @@ def graphics(host_tree, gene_tree):
         node_distance = 2
     #node_distance = (gene_tree.get_node_size() * 30)
     offset_z = z + node_distance
-    offset_x = (x/4) + node_distance
+    offset_x = x + node_distance
     camera.SetPosition(-offset_x, 0.5, offset_z)
 
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
 
-    inter = interactor.Interactor(YELLOW)
+    inter = interactor.Interactor(YELLOW, ortographical_degree)
     inter.set_iren(iren)
     inter.set_camera(renderer.GetActiveCamera())
     inter.set_renWin(renWin)
@@ -119,7 +126,7 @@ def graphics_node_placement(host_tree, graphics_mapper, graphics_property):
     return graphic_actors
 
 
-def graphics_line_placement(tree):
+def graphics_line_placement(tree, line_color=GRAY):
 
     root = tree.get_root()
     linesPolyData = vtk.vtkPolyData()
@@ -150,7 +157,7 @@ def graphics_line_placement(tree):
     color = vtk.vtkNamedColors()
 
     lines_graphic_property = vtk.vtkProperty()
-    lines_graphic_property.SetColor(color.GetColor3d("Gray"))
+    lines_graphic_property.SetColor(color.GetColor3d(line_color))
     lines_graphic_property.SetDiffuse(0.7)
     lines_graphic_property.SetSpecular(0)
     lines_graphic_property.SetSpecularPower(0)

@@ -2,7 +2,7 @@ import vtk
 
 class Interactor(vtk.vtkInteractorStyleUser):
 
-    def __init__(self, color="Blue", parent=None):
+    def __init__(self, color="Blue", within_parallel=45, parent=None):
         self.iren = None
         self.renWin = None
         self.max_rotate = 45
@@ -13,7 +13,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.AddObserver("LeftButtonReleaseEvent", self.left_button_release)
         self.AddObserver("MouseMoveEvent", self.mouse_event)
         self.camera = None
-        self.within_parallell = 45
+        self.within_parallell = within_parallel
         self.last_picked_actor = None
         self.last_picked_property = vtk.vtkProperty()
         self.renderer = None
