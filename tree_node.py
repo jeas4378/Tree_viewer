@@ -16,7 +16,7 @@ class Node:
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
-        self.height = 0
+        self.level = 0
         self.placed = False
 
     def set_left_child(self, node):
@@ -95,11 +95,11 @@ class Node:
     def get_z(self):
         return self.z
 
-    def set_height(self, val):
-        self.height = val
+    def set_level(self, val):
+        self.level = val
 
-    def get_height(self):
-        return self.height
+    def get_level(self):
+        return self.level
 
     def get_placed(self):
         return self.placed
@@ -121,7 +121,7 @@ class Tree:
         self.root = Node()
         self.data = p.parser(tree_data)
         self.tree_info = {}
-        self.height = 0
+        self.depth = 0
         self.x_offset = 0
         self.z_offset = 0
         self.tree_width = 0
@@ -137,12 +137,12 @@ class Tree:
     def get_data(self):
         return self.data
 
-    def get_height(self):
-        return self.height
+    def get_depth(self):
+        return self.depth
 
-    def set_height(self, val):
-        if val > self.get_height():
-            self.height = val
+    def set_depth(self, val):
+        if val > self.get_depth():
+            self.depth = val
 
     def create_update_tree_info(self, key, value):
         self.tree_info[key] = value
@@ -256,8 +256,8 @@ class Tree:
             p.primetag_extractor(node, parser_data[0])
             self.create_update_tree_info(node.get_id(), node)
             parser_data.pop(0)
-            node.set_height(height)
-            self.set_height(height)
+            node.set_level(height)
+            self.set_depth(height)
             if parser_data != [] and parser_data[0] == ')':
                 parser_data.pop(0)
             return node, parser_data
@@ -277,7 +277,7 @@ class Tree:
         else:
             root.set_z(self.get_z_offset())
         root.set_y(1)
-        width = (2 ** self.get_height()) * self.get_node_size() + (self.get_node_size())
+        width = (2 ** self.get_depth()) * self.get_node_size() + (self.get_node_size())
         width /= 4
         if self.get_host():
             if root.get_left_child():
@@ -305,7 +305,7 @@ class Tree:
     def __rec_initial_node_placement(self, node, x, y, z):
 
         width = self.get_tree_width() / 2
-        node_height = node.get_height()
+        node_height = node.get_level()
         width = (width / (2 ** (node_height + 1)))
 
         if self.get_host():
