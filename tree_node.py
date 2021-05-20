@@ -201,7 +201,6 @@ class Tree:
             else:
                 self.set_min_max(node.get_x())
 
-
     def set_min_max(self, val):
         if val > self.get_max():
             self.set_max(val)
@@ -232,6 +231,7 @@ class Tree:
                 node.set_x(val)
             else:
                 node.set_z(val)
+
     # def node_placement(self, host_tree):
     #     self.initial_node_placement()
 
@@ -242,12 +242,20 @@ class Tree:
             parser_data.pop(0)
             left_child, parser_data = self.__rec_tree(left_child, parser_data, height + 1)
             node.set_left_child(left_child)
+            if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(
+                    parser_data[0]):
+                node.set_name(parser_data[0])
+                parser_data.pop(0)
 
         if parser_data[0] == ',':
             right_child = Node(node)
             parser_data.pop(0)
             right_child, parser_data = self.__rec_tree(right_child, parser_data, height + 1)
             node.set_right_child(right_child)
+            if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(
+                    parser_data[0]):
+                node.set_name(parser_data[0])
+                parser_data.pop(0)
 
         if not p.is_numerical(parser_data[0]) and parser_data[0][0] != '&' and not p.is_valid_symbols(parser_data[0]):
             self.add_leaf(node)
@@ -373,7 +381,7 @@ class Tree:
 
     def merge(self, nodes1, nodes2):
         nodes = []
-        while(nodes1 and nodes2):
+        while (nodes1 and nodes2):
             elem1 = nodes1[0]
             elem2 = nodes2[0]
             if self.get_host():
@@ -404,9 +412,9 @@ class Tree:
         pos_axis = []
         neg_axis = []
         node_size = self.get_node_size()
-        offset = node_size*1.2
+        offset = node_size * 1.2
         for node in nodes:
-            #If the tree is a host-tree.
+            # If the tree is a host-tree.
             if self.get_host():
                 if node.get_z() > 0:
                     if pos_axis:
@@ -414,7 +422,7 @@ class Tree:
                         node.set_z(prev_node.get_z() + offset)
                         pos_axis.append(node)
                     else:
-                        node.set_z(offset/2)
+                        node.set_z(offset / 2)
                         pos_axis.append(node)
                 else:
                     if neg_axis:
@@ -422,10 +430,10 @@ class Tree:
                         node.set_z(prev_node.get_z() - offset)
                         neg_axis.append(node)
                     else:
-                        node.set_z(-offset/2)
+                        node.set_z(-offset / 2)
                         neg_axis.append(node)
-                #self.set_min_max(node.get_z())
-            #If the tree is a reconciled gene-tree.
+                # self.set_min_max(node.get_z())
+            # If the tree is a reconciled gene-tree.
             else:
                 if node.get_x() > 0:
                     if pos_axis:
@@ -433,7 +441,7 @@ class Tree:
                         node.set_x(prev_node.get_x() + offset)
                         pos_axis.append(node)
                     else:
-                        node.set_x(offset/2)
+                        node.set_x(offset / 2)
                         pos_axis.append(node)
                 else:
                     if neg_axis:
@@ -441,9 +449,9 @@ class Tree:
                         node.set_x(prev_node.get_x() - offset)
                         neg_axis.append(node)
                     else:
-                        node.set_x(-offset/2)
+                        node.set_x(-offset / 2)
                         neg_axis.append(node)
-                #self.set_min_max(node.get_x())
+                # self.set_min_max(node.get_x())
 
         while nodes:
             nodes = self.__adjust_nodes_parents(nodes)
