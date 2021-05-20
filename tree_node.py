@@ -193,6 +193,15 @@ class Tree:
     def set_min(self, val):
         self.min = val
 
+    def calculate_min_max(self):
+        root = self.get_root()
+        for node in root:
+            if self.get_host():
+                self.set_min_max(node.get_z())
+            else:
+                self.set_min_max(node.get_x())
+
+
     def set_min_max(self, val):
         if val > self.get_max():
             self.set_max(val)
@@ -201,9 +210,9 @@ class Tree:
 
     def create_tree_width(self):
         if self.get_min() != 0 and self.get_max() != 0:
-            max = self.get_max()
-            min = self.get_min()
-            self.tree_width = max - min
+            max_pos = self.get_max()
+            min_pos = self.get_min()
+            self.tree_width = max_pos - min_pos
 
     def get_tree_width(self):
         if self.tree_width == 0:
@@ -304,9 +313,9 @@ class Tree:
 
     def __rec_initial_node_placement(self, node, x, y, z):
 
-        width = self.get_tree_width() / 2
+        width = (2 ** self.get_depth()) * self.get_node_size() + (self.get_node_size())
         node_height = node.get_level()
-        width = (width / (2 ** (node_height + 1)))
+        width = (width / (2 ** (node_height + 2)))
 
         if self.get_host():
             y = y - node.get_distance()
@@ -415,7 +424,7 @@ class Tree:
                     else:
                         node.set_z(-offset/2)
                         neg_axis.append(node)
-                self.set_min_max(node.get_z())
+                #self.set_min_max(node.get_z())
             #If the tree is a reconciled gene-tree.
             else:
                 if node.get_x() > 0:
@@ -434,7 +443,7 @@ class Tree:
                     else:
                         node.set_x(-offset/2)
                         neg_axis.append(node)
-                self.set_min_max(node.get_x())
+                #self.set_min_max(node.get_x())
 
         while nodes:
             nodes = self.__adjust_nodes_parents(nodes)
@@ -459,14 +468,14 @@ class Tree:
         if self.get_host():
             sort = sorted([child_left.get_z(), child_right.get_z()])
             min_val, max_val = sort[0], sort[-1]
-            offset = (max_val + min_val) / 2
-            pos = offset
+            offset = (max_val - min_val) / 2
+            pos = offset + min_val
             parent.set_z(pos)
         else:
             sort = sorted([child_left.get_x(), child_right.get_x()])
             min_val, max_val = sort[0], sort[-1]
-            offset = (max_val + min_val) / 2
-            pos = offset
+            offset = (max_val - min_val) / 2
+            pos = offset + min_val
             parent.set_x(pos)
 
     def match_against_host(self, tree):

@@ -15,8 +15,12 @@ def run(tree1, tree2, ortographical_degree=45):
     tree_gene.place_nodes()
     tree_host.place_nodes()
 
-    offset_host = tree_gene.get_tree_width()
-    tree_host.offset_tree(-offset_host / 2)
+    tree_gene.calculate_min_max()
+    tree_host.calculate_min_max()
+
+    gene_min = tree_gene.get_max()
+    offset_host = gene_min + tree_gene.get_node_size()*2
+    tree_host.offset_tree(-offset_host/2)
 
     offset_gene = tree_host.get_tree_width()
     tree_gene.offset_tree(-offset_gene / 2)
