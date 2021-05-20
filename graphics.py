@@ -46,7 +46,7 @@ def graphics(host_tree, gene_tree, ortographical_degree):
 
     max_width = max(abs(host_tree.get_tree_width()), abs(gene_tree.get_tree_width()))
     if max_width > 1:
-        node_distance = max_width * 1.1
+        node_distance = max_width * 1.7
     else:
         node_distance = 2
     #node_distance = (gene_tree.get_node_size() * 30)
