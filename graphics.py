@@ -38,7 +38,7 @@ def graphics(host_tree, gene_tree, ortographical_degree):
 
     camera = renderer.GetActiveCamera()
     x, z = calculate_focal_point(host_tree, gene_tree)
-    x /= 4
+    #x /= 4
     camera.SetFocalPoint(-x, 0.5, z)
 
     #print(host_tree.get_x_offset(), host_tree.get_z_offset())
@@ -181,14 +181,17 @@ def graphics_add_to_renderer(renderer, actors):
     return renderer
 
 
-def calculate_focal_point(tree1, tree2):
+def calculate_focal_point(host_tree, gene_tree):
 
-    tree1_min = tree1.get_min()
-    tree1_max = tree1.get_max()
-    tree2_min = tree2.get_min()
-    tree2_max = tree2.get_max()
+    host_tree_min = host_tree.get_min()
+    host_tree_max = host_tree.get_max()
+    gene_tree_min = gene_tree.get_min()
+    gene_tree_max = gene_tree.get_max()
 
-    z = -abs((tree1_max - tree1_min) / 2)
-    x = -abs((tree2_max - tree2_min) / 2)
+    #Must include the position of the host tree in the x-axis.
+    host_tree_x = host_tree.get_root().get_x()
+
+    z = abs((host_tree_max + host_tree_min) / 2)
+    x = abs((gene_tree_max + host_tree_x) / 2)
 
     return x, z
