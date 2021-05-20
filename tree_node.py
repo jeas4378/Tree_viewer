@@ -114,6 +114,10 @@ class Node:
         if self.right_child:
             yield from self.right_child
 
+    def __str__(self):
+        m_string = str(self.get_x()) + ", " + str(self.get_y()) + ", " + str(self.get_z())
+        return m_string
+
 
 class Tree:
 
@@ -193,6 +197,18 @@ class Tree:
     def set_min(self, val):
         self.min = val
 
+    def print_leaves(self):
+        leaves = self.get_leaves()
+        for leaf in leaves:
+            print(leaf)
+
+    def __str__(self):
+        root = self.get_root()
+        m_string = ""
+        for node in root:
+            m_string += str(node) + "\n"
+        return m_string
+
     def calculate_min_max(self):
         root = self.get_root()
         for node in root:
@@ -206,6 +222,10 @@ class Tree:
             self.set_max(val)
         elif val < self.get_min():
             self.set_min(val)
+
+    def reset_min_max(self):
+        self.set_max(0)
+        self.set_min(0)
 
     def create_tree_width(self):
         if self.get_min() != 0 and self.get_max() != 0:
@@ -231,6 +251,33 @@ class Tree:
                 node.set_x(val)
             else:
                 node.set_z(val)
+
+    def center(self):
+        min_val = self.get_min()
+        max_val = self.get_max()
+        width = max_val - min_val
+        rel_midpoint = width / 2
+        desired_midpoint = max_val - rel_midpoint
+
+        if abs(max_val) > abs(min_val):
+            self.shift(-abs(desired_midpoint))
+        else:
+            self.shift(abs(desired_midpoint))
+
+    def shift(self, val):
+        root = self.get_root()
+        self.reset_min_max()
+        for node in root:
+            if self.get_host():
+                z_pos = node.get_z()
+                new_pos = z_pos + val
+                node.set_z(new_pos)
+                self.set_min_max(node.get_z())
+            else:
+                x_pos = node.get_x()
+                new_pos = x_pos + val
+                node.set_x(new_pos)
+                self.set_min_max(node.get_x())
 
     # def node_placement(self, host_tree):
     #     self.initial_node_placement()
