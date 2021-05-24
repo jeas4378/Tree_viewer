@@ -394,13 +394,13 @@ class Tree:
             if node.get_left_child():
                 self.__rec_initial_node_placement(node.get_left_child(),
                                                   x - width,
-                                                  y - 0.1,
+                                                  y - self.get_node_size(),
                                                   z)
 
             if node.get_right_child():
                 self.__rec_initial_node_placement(node.get_right_child(),
                                                   x + width,
-                                                  y - 0.1,
+                                                  y - self.get_node_size(),
                                                   z)
 
     def place_nodes(self):
