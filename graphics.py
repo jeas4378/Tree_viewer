@@ -16,7 +16,7 @@ LIME_GREEN = "lime_green"
 colors = vtk.vtkNamedColors()
 
 
-def graphics(host_tree, gene_tree, ortographical_degree):
+def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
 
     renderer = vtk.vtkRenderer()
 
@@ -57,11 +57,13 @@ def graphics(host_tree, gene_tree, ortographical_degree):
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
 
-    inter = interactor.Interactor(YELLOW, ortographical_degree)
-    inter.set_iren(iren)
-    inter.set_camera(renderer.GetActiveCamera())
-    inter.set_renWin(renWin)
-    inter.set_renderer(renderer)
+    inter = vtk.vtkInteractorStyleTrackballCamera()
+    if custom_interactor:
+        inter = interactor.Interactor(YELLOW, ortographical_degree)
+        inter.set_iren(iren)
+        inter.set_camera(renderer.GetActiveCamera())
+        inter.set_renWin(renWin)
+        inter.set_renderer(renderer)
 
     iren.SetInteractorStyle(inter)
 

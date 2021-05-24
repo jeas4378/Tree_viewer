@@ -3,7 +3,7 @@ import graphics as g
 import sys
 
 
-def run(tree1, tree2, ortographical_degree=45):
+def run(tree1, tree2, ortographical_degree=45, custom_interactor=False):
     tree_host = tn.Tree(tree1)
     tree_gene = tn.Tree(tree2)
 
@@ -31,7 +31,7 @@ def run(tree1, tree2, ortographical_degree=45):
     tree_gene.match_against_host(tree_host)
     tree_gene.height_adjustment()
 
-    g.graphics(tree_host, tree_gene, ortographical_degree)
+    g.graphics(tree_host, tree_gene, ortographical_degree, custom_interactor)
 
 if __name__ == '__main__':
 
@@ -43,6 +43,6 @@ if __name__ == '__main__':
         tree2 = sys.argv[2]
         try:
             ortographical_degree = int(sys.argv[3])
-            run(tree1, tree2, ortographical_degree)
+            run(tree1, tree2, ortographical_degree, True)
         except IndexError:
-            run(tree1, tree2)
+            run(tree1, tree2, 45, False)
