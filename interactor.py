@@ -19,6 +19,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.renderer = None
         self.colors = vtk.vtkNamedColors()
         self.color = color
+        self.limit_rotation = False
 
     def left_button_press(self, obj, event):
         self.boolRotate = 1
@@ -62,8 +63,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
         xy_pos = self.iren.GetEventPosition()
         x = xy_pos[0]
 
-        if self.get_boolRotate() and self.is_in_valid_range(x, last_x):
-            self.rotate(x, last_x)
+        if self.get_boolRotate():
+            if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
+                self.rotate(x, last_x)
+            else:
+                self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
         rotate_diff = last_x - x
@@ -71,20 +75,23 @@ class Interactor(vtk.vtkInteractorStyleUser):
         max = self.get_max_rotate()
         min = self.get_min_rotate()
 
-        if (current + rotate_diff) > max:
-            clamp = (current + rotate_diff) - max
-            rotate_diff -= clamp
-        elif (current + rotate_diff) < min:
-            clamp = (current + rotate_diff) - min
-            rotate_diff -= clamp
+        if self.get_limit_rotation():
+            if (current + rotate_diff) > max:
+                clamp = (current + rotate_diff) - max
+                rotate_diff -= clamp
+            elif (current + rotate_diff) < min:
+                clamp = (current + rotate_diff) - min
+                rotate_diff -= clamp
 
         self.get_camera().Azimuth(rotate_diff)
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
-        if self.is_within_parallell():
-            self.get_camera().SetParallelProjection(1)
-        else:
-            self.get_camera().SetParallelProjection(0)
+
+        if self.get_limit_rotation():
+            if self.is_within_parallell():
+                self.get_camera().SetParallelProjection(1)
+            else:
+                self.get_camera().SetParallelProjection(0)
         self.get_renWin().Render()
 
 
@@ -126,6 +133,12 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def get_renderer(self):
         return self.renderer
+
+    def set_limit_rotation(self, val):
+        self.limit_rotation = val
+
+    def get_limit_rotation(self):
+        return self.limit_rotation
 
     def is_in_valid_range(self, x, last_x):
         diff = last_x - x
