@@ -12,6 +12,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.AddObserver("LeftButtonPressEvent", self.left_button_press)
         self.AddObserver("LeftButtonReleaseEvent", self.left_button_release)
         self.AddObserver("MouseMoveEvent", self.mouse_event)
+        self.AddObserver("KeyPressEvent", self.keypress)
         self.camera = None
         self.within_parallell = within_parallel
         self.last_picked_actor = None
@@ -19,7 +20,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.renderer = None
         self.colors = vtk.vtkNamedColors()
         self.color = color
-        self.limit_rotation = False
+        self.limit_rotation = True
 
     def left_button_press(self, obj, event):
         self.boolRotate = 1
@@ -87,11 +88,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
 
-        if self.get_limit_rotation():
-            if self.is_within_parallell():
-                self.get_camera().SetParallelProjection(1)
-            else:
-                self.get_camera().SetParallelProjection(0)
+        # if self.get_limit_rotation():
+        #     if self.is_within_parallell():
+        #         self.get_camera().SetParallelProjection(1)
+        #     else:
+        #         self.get_camera().SetParallelProjection(0)
         self.get_renWin().Render()
 
 
@@ -140,6 +141,12 @@ class Interactor(vtk.vtkInteractorStyleUser):
     def get_limit_rotation(self):
         return self.limit_rotation
 
+    def set_ortographic(self):
+        if self.get_camera().GetParallelProjection():
+            self.get_camera().SetParallelProjection(0)
+        else:
+            self.get_camera().SetParallelProjection(1)
+
     def is_in_valid_range(self, x, last_x):
         diff = last_x - x
         if self.get_max_rotate() >= self.get_current_rotate() >= self.get_min_rotate():
@@ -157,3 +164,15 @@ class Interactor(vtk.vtkInteractorStyleUser):
             return True
         else:
             return False
+
+    def keypress(self, obj, event):
+        key = obj.GetKeySym()
+
+        if key == "f":
+            val = False if self.get_limit_rotation() else True
+            self.set_limit_rotation(val)
+
+        if key == "o":
+            self.set_ortographic()
+
+        self.get_renWin().Render()
