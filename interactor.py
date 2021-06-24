@@ -168,7 +168,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
     def keypress(self, obj, event):
         key = obj.GetKeySym()
 
-        if key == "f":
+        if key == "i":
             val = False if self.get_limit_rotation() else True
             self.set_limit_rotation(val)
 
