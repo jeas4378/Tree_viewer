@@ -17,7 +17,6 @@ def parser(host_file):
 
     arr_host = m_splitter(str_host)
 
-    #print(arr_host)
     return arr_host
 
 
@@ -25,6 +24,7 @@ def m_splitter(str_content):
     """
     A function that does the actual splitting by going through 'str_content' and splitting it accordingly into an
     array.
+
     :param str_content: A String with content in PrimeTV-format.
     :return: An Array with the splitted result.
     """
@@ -61,6 +61,7 @@ def m_splitter(str_content):
 def host_gene_retriever(arr_input, bool_host, bool_gene):
     """
     A function that splits the Host- and Gene-tree and returns them both seperately or just one or the other.
+
     :param arr_input: An Array containing the material from the PrimeTV-format.
     :param bool_host: A Boolean which if True results in returning the Host-tree.
     :param bool_gene: A Boolean which if True results in returning the Gene-tree.
@@ -86,6 +87,12 @@ def host_gene_retriever(arr_input, bool_host, bool_gene):
 
 
 def is_numerical(val):
+    """
+    A function that checks if the upcoming value is numerical.
+
+    :param val: A String to be checked.
+    :return: A boolean.
+    """
 
     if val[0] == ":":
         return True
@@ -94,6 +101,13 @@ def is_numerical(val):
 
 
 def primetag_extractor(node, tag):
+    """
+    Exctracts the information from a Prime-tag and assigns it to a Node-object.
+
+    :param node: A node-object to which the information in the Prime-tag will be assigned.
+    :param tag: The Primetag containing the information.
+    :return: None.
+    """
 
     tag_split = my_prime_splitter(tag)
     tag_split.pop(0)
@@ -121,6 +135,12 @@ def primetag_extractor(node, tag):
             node.set_name(buffer)
 
 def my_prime_splitter(val):
+    """
+    Takes a Primetag as a String and splits out all the information as elements into an array.
+
+    :param val: The Primetag as a String.
+    :return: An Array with all the information in the Primetag as elements.
+    """
 
     result = []
     bracket = 0
@@ -143,6 +163,12 @@ def my_prime_splitter(val):
 
 
 def is_valid_symbols(val):
+    """
+    Checks if a value is in the list 'valid symbols' up top.
+
+    :param val: A character to be checked.
+    :return: A boolean.
+    """
 
     if val in valid_symbols:
         return True

@@ -2,6 +2,10 @@ import vtk
 
 class Interactor(vtk.vtkInteractorStyleUser):
 
+    """
+    A custom Interactor-class which limits interaction to rotation only.
+    """
+
     def __init__(self, color="Blue", within_parallel=45, parent=None):
         self.iren = None
         self.renWin = None
@@ -23,59 +27,102 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.limit_rotation = True
 
     def left_button_press(self, obj, event):
+        """
+        A method that runs when you click your left mouse button.
+
+        :param obj: An object.
+        :param event: An event.
+        :return: Nothing.
+        """
+
+        # When clicking on the left mouse button this value is set to one which impacts under the method
+        # 'mouse_event'.
         self.boolRotate = 1
 
+        # Get the position in the window where the user clicked.
         clickPos = self.iren.GetEventPosition()
 
         picker = vtk.vtkPropPicker()
         picker.Pick(clickPos[0], clickPos[1], 0, self.get_renderer())
 
-        # get the new
+        # Gets the new actor that might have been clicked.
         self.NewPickedActor = picker.GetActor()
 
-        # If something was selected
+        # If the user clicked on an actor.
         if self.NewPickedActor:
-            # If we picked something before, reset its property
+            # If there is a previous clicked object we restore it's property.
             if self.last_picked_actor:
                 self.last_picked_actor.GetProperty().DeepCopy(self.last_picked_property)
 
-            # Save the property of the picked actor so that we can
-            # restore it next time
+            # Save away the current property so we can restore it later.
             self.last_picked_property.DeepCopy(self.NewPickedActor.GetProperty())
-            # Highlight the picked actor by changing its properties
+            # The clicked actor gets it's property changed.
             self.NewPickedActor.GetProperty().SetColor(self.colors.GetColor3d(self.color))
             self.NewPickedActor.GetProperty().SetDiffuse(1.0)
             self.NewPickedActor.GetProperty().SetSpecular(0.0)
             self.NewPickedActor.GetProperty().EdgeVisibilityOn()
 
-            # save the last picked actor
+            # Save away the current actor being clicked.
             self.last_picked_actor = self.NewPickedActor
         self.get_renWin().Render()
         return
 
     def left_button_release(self, obj, event):
+        """
+        Dictates what should happen when the left mouse button is released.
+
+        Changes the boolean value so that nothing happens when you move the mouse over the screen.
+
+        :param obj: An object.
+        :param event: An event.
+        :return: Nothing.
+        """
         self.boolRotate = 0
         return
 
     def mouse_event(self, obj, event):
+        """
+        The method that dictates what happens when the mouse moves over the Render Window.
+
+        If the left mouse button is pressed the graphical representation will rotate if the parameters are met.
+
+        :param obj: An object.
+        :param event: An event.
+        :return: Nothing.
+        """
+
+        # Get the previous position of the mouse cursor.
         last_xy_pos = self.iren.GetLastEventPosition()
         last_x = last_xy_pos[0]
 
+        # Get the current position of the mouse cursor.
         xy_pos = self.iren.GetEventPosition()
         x = xy_pos[0]
 
+        # If the left mouse button is clicked.
         if self.get_boolRotate():
+            # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 self.rotate(x, last_x)
             else:
                 self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
+        """
+        The method that actually rotates the Camera.
+
+        :param x: A numerical value containing the current x-position of the mouse cursor.
+        :param last_x: A numerical value containing the previous x-position of the mouse cursor.
+        :return: Nothing.
+        """
+
+        # Calculates if there should be a positive or negative rotation.
         rotate_diff = last_x - x
         current = self.get_current_rotate()
         max = self.get_max_rotate()
         min = self.get_min_rotate()
 
+        # If there is a rotation limit then we calculate how much the graphical representation is allowed to rotate.
         if self.get_limit_rotation():
             if (current + rotate_diff) > max:
                 clamp = (current + rotate_diff) - max
@@ -84,70 +131,162 @@ class Interactor(vtk.vtkInteractorStyleUser):
                 clamp = (current + rotate_diff) - min
                 rotate_diff -= clamp
 
+        # The actual rotation process.
         self.get_camera().Azimuth(rotate_diff)
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
 
-        # if self.get_limit_rotation():
-        #     if self.is_within_parallell():
-        #         self.get_camera().SetParallelProjection(1)
-        #     else:
-        #         self.get_camera().SetParallelProjection(0)
+        # Re-render the viewport.
         self.get_renWin().Render()
 
 
     def get_current_rotate(self):
+        """
+        Get the current rotation of the camera in reference from the starting position which has the value 0.
+
+        :return: A numerical value.
+        """
         return self.current_rotate
 
     def get_min_rotate(self):
+        """
+        Get the minimum rotational value allowed. A value of -45 means that you can at most rotate a -45 degrees from
+        the starting position which has the value 0.
+
+        :return: A numerical value.
+        """
         return self.min_rotate
 
     def get_max_rotate(self):
+        """
+        Get the maximal rotational value allowed. A value of 45 means that you can at most rotate 45 degrees from the
+        starting position which has the value of 0.
+
+        :return: A numerical value.
+        """
         return self.max_rotate
 
     def set_current_rotate(self, x):
+        """
+        Adds the rotation to the current value.
+
+        :param x: A numerical value.
+        :return: Nothing.
+        """
         self.current_rotate += x
 
     def get_camera(self):
+        """
+        Gets the vtkCamera-object associated with this instance of this class.
+
+        :return: A vtkCamera-object.
+        """
         return self.camera
 
     def get_renWin(self):
+        """
+        Gets the vtkRenderWindow-object associated with the instance of this class.
+
+        :return: A vtkRenderWindow-object.
+        """
         return self.renWin
 
     def set_renWin(self, renWin):
+        """
+        Sets a vtkRenderWindow-object to an instance of this class.
+
+        :param renWin: A vtkRenderWindow-object.
+        :return: Nothing.
+        """
         self.renWin = renWin
 
     def set_camera(self, camera):
+        """
+        Sets a vtkCamera-object to an instance of this class.
+
+        :param camera: a vtkCamera-object.
+        :return: Nothing.
+        """
         self.camera = camera
 
     def set_iren(self, iren):
+        """
+        Sets a vtkRenderWindowInteractor-object to an instance of this class.
+
+        :param iren: A vtkRenderWindowInteractor-object.
+        :return: Nothing.
+        """
         self.iren = iren
 
     def get_boolRotate(self):
+        """
+        Gets the value of the variable 'boolRotate'.
+
+        :return: An integer of either 0 or 1.
+        """
         return self.boolRotate
 
     def get_within_parallell(self):
+        """
+        Gets the value of the variable 'within_parallell'.
+
+        :return: A numerical value.
+        """
         return self.within_parallell
 
     def set_renderer(self, renderer):
+        """
+        Sets a vtkRender-object to be associcated with this instance of the class.
+
+        :param renderer: A vtkRenderer-object.
+        :return: Nothing.
+        """
         self.renderer = renderer
 
     def get_renderer(self):
+        """
+        Returns the vktRenderer-object associated with the instance of this class.
+
+        :return: A vtkRenderer-object.
+        """
         return self.renderer
 
     def set_limit_rotation(self, val):
+        """
+        Sets if the rotation should be limited or not.
+
+        :param val: A boolean value of 'True' or 'False'.
+        :return: Nothing.
+        """
         self.limit_rotation = val
 
     def get_limit_rotation(self):
+        """
+        Returns if rotation is limited or not.
+
+        :return: A boolean value of 'True' or 'False'.
+        """
         return self.limit_rotation
 
     def set_ortographic(self):
+        """
+        A method that turns on or off orthographical camera projection.
+
+        :return: Nothing.
+        """
         if self.get_camera().GetParallelProjection():
             self.get_camera().SetParallelProjection(0)
         else:
             self.get_camera().SetParallelProjection(1)
 
     def is_in_valid_range(self, x, last_x):
+        """
+        A method that check if the current rotation is within the designated threshold for allowed rotation.
+
+        :param x: The current x-position of the mouse cursor.
+        :param last_x: The previous position of the mouse cursor.
+        :return: A boolean value of 'True' or 'False'.
+        """
         diff = last_x - x
         if self.get_max_rotate() >= self.get_current_rotate() >= self.get_min_rotate():
             return True
@@ -160,12 +299,27 @@ class Interactor(vtk.vtkInteractorStyleUser):
                 return False
 
     def is_within_parallell(self):
+        """
+        A method that checks if the rotation has passed the point of which orthographical projection should be
+        turned on.
+
+        :return: A boolean value of 'True' or 'False'.
+        """
         if abs(self.get_current_rotate()) >= self.get_within_parallell():
             return True
         else:
             return False
 
     def keypress(self, obj, event):
+        """
+        A method that listens after keypresses.
+
+        When specific keys are pressed different operations will be performed.
+
+        :param obj: An object.
+        :param event: An event.
+        :return: Nothing.
+        """
         key = obj.GetKeySym()
 
         if key == "i":
