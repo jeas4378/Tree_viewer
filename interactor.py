@@ -25,6 +25,9 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.colors = vtk.vtkNamedColors()
         self.color = color
         self.limit_rotation = True
+        self.current_pitch = 0
+        self.pitch_min = 0
+        self.pitch_max = 90
 
     def left_button_press(self, obj, event):
         """
@@ -94,13 +97,16 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # Get the previous position of the mouse cursor.
         last_xy_pos = self.iren.GetLastEventPosition()
         last_x = last_xy_pos[0]
+        last_y = last_xy_pos[1]
 
         # Get the current position of the mouse cursor.
         xy_pos = self.iren.GetEventPosition()
         x = xy_pos[0]
+        y = xy_pos[1]
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
+            #self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 self.rotate(x, last_x)
@@ -119,16 +125,16 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # Calculates if there should be a positive or negative rotation.
         rotate_diff = last_x - x
         current = self.get_current_rotate()
-        max = self.get_max_rotate()
-        min = self.get_min_rotate()
+        max_rotate = self.get_max_rotate()
+        min_rotate = self.get_min_rotate()
 
         # If there is a rotation limit then we calculate how much the graphical representation is allowed to rotate.
         if self.get_limit_rotation():
-            if (current + rotate_diff) > max:
-                clamp = (current + rotate_diff) - max
+            if (current + rotate_diff) > max_rotate:
+                clamp = (current + rotate_diff) - max_rotate
                 rotate_diff -= clamp
-            elif (current + rotate_diff) < min:
-                clamp = (current + rotate_diff) - min
+            elif (current + rotate_diff) < min_rotate:
+                clamp = (current + rotate_diff) - min_rotate
                 rotate_diff -= clamp
 
         # The actual rotation process.
@@ -139,6 +145,24 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # Re-render the viewport.
         self.get_renWin().Render()
 
+    def camera_pitch(self, y, last_y):
+        rotate_diff = last_y - y
+        current = self.get_current_pitch()
+        max_pitch = self.get_pitch_max()
+        min_pitch = self.get_pitch_min()
+
+        # If there is a rotation limit then we calculate how much the graphical representation is allowed to rotate.
+        if (current + rotate_diff) > max_pitch:
+            clamp = (current + rotate_diff) - max_pitch
+            rotate_diff -= clamp
+        elif (current + rotate_diff) < min_pitch:
+            clamp = (current + rotate_diff) - min_pitch
+            rotate_diff -= clamp
+
+        # The actual rotation process.
+        self.get_camera().Elevation(rotate_diff)
+        self.set_current_pitch(rotate_diff)
+       # self.get_camera().OrthogonalizeViewUp()
 
     def get_current_rotate(self):
         """
@@ -267,6 +291,39 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :return: A boolean value of 'True' or 'False'.
         """
         return self.limit_rotation
+
+    def get_current_pitch(self):
+        """
+        Returns the current pitch-angle of the camera object.
+
+        :return: A numerical value.
+        """
+        return self.current_pitch
+
+    def set_current_pitch(self, y):
+        """
+        Adjust the current pitch of the camera.
+
+        :param y: A numerical value.
+        :return: Nothing.
+        """
+        self.current_pitch += y
+
+    def get_pitch_min(self):
+        """
+        Returns the minimum allowed angle for the pitch of the camera.
+
+        :return: A numerical value.
+        """
+        return self.pitch_min
+
+    def get_pitch_max(self):
+        """
+        Returns the maximum allowed angle for the pitch of the camera.
+
+        :return: A numerical value.
+        """
+        return self.pitch_max
 
     def set_ortographic(self):
         """
