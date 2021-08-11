@@ -29,7 +29,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.limit_rotation = True
         self.current_pitch = 0
         self.pitch_min = 0
-        self.pitch_max = 70
+        self.pitch_max = 80
         self.rotation_speed = 1
 
     def left_button_press(self, obj, event):
@@ -109,7 +109,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
-            self.camera_pitch(y, last_y)
+            #self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 # pass
@@ -180,7 +180,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
             new_position = self.matrix_rotation(intermediate_position, [0, -adjust_pos, 0])
             self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
             self.set_current_pitch(rotate_diff)
-            # self.get_camera().OrthogonalizeViewUp()
+            self.get_camera().OrthogonalizeViewUp()
             self.get_renWin().Render()
 
     def matrix_rotation(self, point, rotation):
