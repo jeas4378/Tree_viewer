@@ -30,7 +30,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.current_pitch = 0
         self.pitch_min = 0
         self.pitch_max = 90
-        self.rotation_speed = 50
+        self.rotation_speed = 59
 
     def left_button_press(self, obj, event):
         """
