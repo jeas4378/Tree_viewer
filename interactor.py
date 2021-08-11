@@ -29,7 +29,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.limit_rotation = True
         self.current_pitch = 0
         self.pitch_min = 0
-        self.pitch_max = 90
+        self.pitch_max = 70
         self.rotation_speed = 1
 
     def left_button_press(self, obj, event):
@@ -109,13 +109,13 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
-            #self.camera_pitch(y, last_y)
+            self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
-                #pass
+                # pass
                 self.rotate(x, last_x)
             else:
-                #pass
+                # pass
                 self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
@@ -176,7 +176,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
             adjust_pos = abs(current_rotation) - 45
             camera_position = self.get_camera_position()
             intermediate_position = self.matrix_rotation(camera_position, [0, adjust_pos, 0])
-            intermediate_position = self.matrix_rotation(intermediate_position, [rotate_diff, 0, 0])
+            intermediate_position = self.matrix_rotation(intermediate_position, [0, 0, -rotate_diff])
             new_position = self.matrix_rotation(intermediate_position, [0, -adjust_pos, 0])
             self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
             self.set_current_pitch(rotate_diff)
@@ -216,7 +216,9 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # The transformation of the point where the point is a column vector.
 
         for i in range(len(rotation_matrix)):
-            transformed_point[i] = (rotation_matrix[i][0]*point[0] + rotation_matrix[i][1]*point[1] + rotation_matrix[i][2]*point[2])
+            transformed_point[i] = (rotation_matrix[i][0]*point[0] +
+                                    rotation_matrix[i][1]*point[1] +
+                                    rotation_matrix[i][2]*point[2])
 
         return transformed_point
 
