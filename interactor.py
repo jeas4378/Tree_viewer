@@ -140,7 +140,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
                 clamp = (current + rotate_diff) - min_rotate
                 rotate_diff -= clamp
 
-        rotate_diff /= self.rotation_speed
+        #rotate_diff /= self.rotation_speed
         # The actual rotation process.
         if abs(rotate_diff) > 0:
             position = self.get_camera().GetPosition()
@@ -177,9 +177,9 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def matrix_rotation(self, point, rotation):
 
-        rot_x = rotation[0]
-        rot_y = rotation[1]
-        rot_z = rotation[2]
+        rot_x = rotation[0] / self.rotation_speed
+        rot_y = rotation[1] / self.rotation_speed
+        rot_z = rotation[2] / self.rotation_speed
 
         transformed_point = [0, 0, 0]
 
@@ -199,7 +199,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
                                [-math.sin(theta), 0, math.cos(theta)]]
         elif rot_y == 0 and rot_z == 0:
             theta = rot_x
-            rotation_matrix = [[1, 0 , 0],
+            rotation_matrix = [[1, 0, 0],
                                [0, math.cos(theta), -math.sin(theta)],
                                [0, math.sin(theta), math.cos(theta)]]
         else:
@@ -246,7 +246,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :param x: A numerical value.
         :return: Nothing.
         """
-        self.current_rotate += (x * self.rotation_speed)
+        self.current_rotate += x
 
     def get_camera(self):
         """
