@@ -1,3 +1,5 @@
+import math
+
 import vtk
 
 class Interactor(vtk.vtkInteractorStyleUser):
@@ -28,6 +30,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.current_pitch = 0
         self.pitch_min = 0
         self.pitch_max = 90
+        self.rotation_speed = 50
 
     def left_button_press(self, obj, event):
         """
@@ -137,13 +140,21 @@ class Interactor(vtk.vtkInteractorStyleUser):
                 clamp = (current + rotate_diff) - min_rotate
                 rotate_diff -= clamp
 
+        rotate_diff /= self.rotation_speed
         # The actual rotation process.
-        self.get_camera().Azimuth(rotate_diff)
-        self.set_current_rotate(rotate_diff)
-        self.get_camera().OrthogonalizeViewUp()
+        if abs(rotate_diff) > 0:
+            position = self.get_camera().GetPosition()
+            camera_position = []
+            for pos in position:
+                camera_position.append(pos)
+            new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
+            self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
+            #self.get_camera().Azimuth(rotate_diff)
+            self.set_current_rotate(rotate_diff)
+            self.get_camera().OrthogonalizeViewUp()
 
-        # Re-render the viewport.
-        self.get_renWin().Render()
+            # Re-render the viewport.
+            self.get_renWin().Render()
 
     def camera_pitch(self, y, last_y):
         rotate_diff = last_y - y
@@ -162,7 +173,45 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # The actual rotation process.
         self.get_camera().Elevation(rotate_diff)
         self.set_current_pitch(rotate_diff)
-       # self.get_camera().OrthogonalizeViewUp()
+        # self.get_camera().OrthogonalizeViewUp()
+
+    def matrix_rotation(self, point, rotation):
+
+        rot_x = rotation[0]
+        rot_y = rotation[1]
+        rot_z = rotation[2]
+
+        transformed_point = [0, 0, 0]
+
+        rotation_matrix = [[], [], []]
+        theta = 0
+
+        if rot_x == 0 and rot_y == 0:
+            theta = rot_z
+            # Rotation matrix represented with each row representing each matrix row.
+            rotation_matrix = [[math.cos(theta), -math.sin(theta), 0],
+                               [math.sin(theta), math.cos(theta), 0],
+                               0, 0, 1]
+        elif rot_x == 0 and rot_z == 0:
+            theta = rot_y
+            rotation_matrix = [[math.cos(theta), 0 , math.sin(theta)],
+                               [0, 1, 0],
+                               [-math.sin(theta), 0, math.cos(theta)]]
+        elif rot_y == 0 and rot_z == 0:
+            theta = rot_x
+            rotation_matrix = [[1, 0 , 0],
+                               [0, math.cos(theta), -math.sin(theta)],
+                               [0, math.sin(theta), math.cos(theta)]]
+        else:
+            return [0, 0, 0]
+
+        # The transformation of the point where the point is a column vector.
+
+        for i in range(len(rotation_matrix)):
+            transformed_point[i] = (rotation_matrix[i][0]*point[0] + rotation_matrix[i][1]*point[1] + rotation_matrix[i][2]*point[2])
+
+        return transformed_point
+
 
     def get_current_rotate(self):
         """
@@ -197,7 +246,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :param x: A numerical value.
         :return: Nothing.
         """
-        self.current_rotate += x
+        self.current_rotate += (x * self.rotation_speed)
 
     def get_camera(self):
         """
