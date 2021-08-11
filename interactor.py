@@ -112,10 +112,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
             #self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
-                # pass
+                #pass
                 self.rotate(x, last_x)
             else:
-                # pass
+                #pass
                 self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
@@ -145,11 +145,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
         #rotate_diff /= self.rotation_speed
         # The actual rotation process.
         if abs(rotate_diff) > 0:
-            rotate_diff /= self.rotation_speed
-            camera_position = self.get_camera_position()
-            new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
-            self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
-            #self.get_camera().Azimuth(rotate_diff)
+            #rotate_diff /= self.rotation_speed
+            #camera_position = self.get_camera_position()
+            #new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
+            #self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
+            self.get_camera().Azimuth(rotate_diff)
             self.set_current_rotate(rotate_diff)
             self.get_camera().OrthogonalizeViewUp()
 

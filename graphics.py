@@ -93,7 +93,7 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
         inter.set_camera(renderer.GetActiveCamera())
         inter.set_renWin(renWin)
         inter.set_renderer(renderer)
-        inter.set_current_rotate(angle)
+        #inter.set_current_rotate(angle)
 
     # Assigns the object dictating how to interact with the render window to the interactor-object.
     iren.SetInteractorStyle(inter)
