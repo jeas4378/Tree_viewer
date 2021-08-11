@@ -30,7 +30,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.current_pitch = 0
         self.pitch_min = 0
         self.pitch_max = 90
-        self.rotation_speed = 59
+        self.rotation_speed = 1
 
     def left_button_press(self, obj, event):
         """
@@ -112,8 +112,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
             #self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
+                #pass
                 self.rotate(x, last_x)
             else:
+                #pass
                 self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
@@ -143,10 +145,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
         #rotate_diff /= self.rotation_speed
         # The actual rotation process.
         if abs(rotate_diff) > 0:
-            position = self.get_camera().GetPosition()
-            camera_position = []
-            for pos in position:
-                camera_position.append(pos)
+            rotate_diff /= self.rotation_speed
+            camera_position = self.get_camera_position()
             new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
             self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
             #self.get_camera().Azimuth(rotate_diff)
@@ -171,15 +171,23 @@ class Interactor(vtk.vtkInteractorStyleUser):
             rotate_diff -= clamp
 
         # The actual rotation process.
-        self.get_camera().Elevation(rotate_diff)
-        self.set_current_pitch(rotate_diff)
-        # self.get_camera().OrthogonalizeViewUp()
+        if abs(rotate_diff) > 0:
+            current_rotation = self.get_current_rotate()
+            adjust_pos = abs(current_rotation) - 45
+            camera_position = self.get_camera_position()
+            intermediate_position = self.matrix_rotation(camera_position, [0, adjust_pos, 0])
+            intermediate_position = self.matrix_rotation(intermediate_position, [rotate_diff, 0, 0])
+            new_position = self.matrix_rotation(intermediate_position, [0, -adjust_pos, 0])
+            self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
+            self.set_current_pitch(rotate_diff)
+            # self.get_camera().OrthogonalizeViewUp()
+            self.get_renWin().Render()
 
     def matrix_rotation(self, point, rotation):
 
-        rot_x = rotation[0] / self.rotation_speed
-        rot_y = rotation[1] / self.rotation_speed
-        rot_z = rotation[2] / self.rotation_speed
+        rot_x = math.radians(rotation[0])
+        rot_y = math.radians(rotation[1])
+        rot_z = math.radians(rotation[2])
 
         transformed_point = [0, 0, 0]
 
@@ -191,10 +199,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
             # Rotation matrix represented with each row representing each matrix row.
             rotation_matrix = [[math.cos(theta), -math.sin(theta), 0],
                                [math.sin(theta), math.cos(theta), 0],
-                               0, 0, 1]
+                               [0, 0, 1]]
         elif rot_x == 0 and rot_z == 0:
             theta = rot_y
-            rotation_matrix = [[math.cos(theta), 0 , math.sin(theta)],
+            rotation_matrix = [[math.cos(theta), 0, math.sin(theta)],
                                [0, 1, 0],
                                [-math.sin(theta), 0, math.cos(theta)]]
         elif rot_y == 0 and rot_z == 0:
@@ -281,6 +289,20 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :return: Nothing.
         """
         self.camera = camera
+
+    def get_camera_position(self):
+        """
+        Gets the position of the camera and converts if from a tuple to an array.
+
+        :return: An array with 3 numerical elements.
+        """
+        position = self.get_camera().GetPosition()
+        camera_position = []
+        for pos in position:
+            camera_position.append(pos)
+
+        return camera_position
+
 
     def set_iren(self, iren):
         """

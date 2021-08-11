@@ -1,3 +1,5 @@
+import math
+
 import vtk
 import interactor
 
@@ -75,6 +77,10 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
     offset_x = x + node_distance
     camera.SetPosition(-offset_x, 0.5, offset_z)
 
+    angle = math.atan(offset_z/-offset_x)
+    angle = math.degrees(angle)
+    angle = abs(angle) - 45
+
     # Creates an Interactor-object so the user can interact with the RenderWindow.
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
@@ -87,6 +93,7 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
         inter.set_camera(renderer.GetActiveCamera())
         inter.set_renWin(renWin)
         inter.set_renderer(renderer)
+        inter.set_current_rotate(angle)
 
     # Assigns the object dictating how to interact with the render window to the interactor-object.
     iren.SetInteractorStyle(inter)
