@@ -115,8 +115,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 self.rotate(x, last_x)
+                #pass
             else:
                 self.rotate(x, last_x)
+                #pass
 
     def rotate(self, x, last_x):
         """
@@ -171,6 +173,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.set_current_pitch(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
 
+        self.get_renWin().Render()
+
     def get_current_rotate(self):
         """
         Get the current rotation of the camera in reference from the starting position which has the value 0.
@@ -204,7 +208,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         point = self.get_camera().GetPosition()
 
-        position = [point[0], point[1] - 0.5, point[2]]
+        position = [point[0], point[1]-0.5, point[2]]
 
         return position
 
@@ -214,8 +218,11 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
     def spherical_rotate(self, ew, ns):
 
-        phi = self.calc_phi()
-        theta = self.calc_theta()
+        position = self.get_camera_position()
+        #position[0] *= -1
+
+        phi = self.calc_phi(position)
+        theta = self.calc_theta(position)
         r = self.get_r()
 
         ew_radian = math.radians(ew)
@@ -225,26 +232,26 @@ class Interactor(vtk.vtkInteractorStyleUser):
         new_theta = theta + ns_radian
 
         x = r*math.cos(new_theta)*math.sin(new_phi)
-        y = r*math.sin(new_theta)*math.sin(new_phi)
-        z = r*math.cos(new_theta)
+        z = r*math.sin(new_theta)*math.sin(new_phi)
+        y = r*math.cos(new_theta)
 
         position = [x, y, z]
 
         return position
 
-    def calc_phi(self):
-        position = self.get_camera_position()
+    def calc_phi(self, position):
+        #position = self.get_camera_position()
         x = position[0]
-        y = position[1]
+        z = position[1]
 
-        phi = math.atan(y/x)
+        phi = math.atan(z/x)
         return phi
 
-    def calc_theta(self):
-        position = self.get_camera_position()
-        z = position[2]
+    def calc_theta(self, position):
+        #position = self.get_camera_position()
+        y = position[1]
         r = self.get_r()
-        theta = math.acos(z/r)
+        theta = math.acos(y/r)
 
         return theta
 
