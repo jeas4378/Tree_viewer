@@ -97,7 +97,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :return: Nothing.
         """
 
-        if self.r == 0.0:
+        if self.get_r() == 0.0:
             self.calculate_r()
         # Get the previous position of the mouse cursor.
         last_xy_pos = self.iren.GetLastEventPosition()
@@ -187,7 +187,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         return self.min_rotate
 
     def calculate_r(self):
-        point = self.get_camera().GetPosition()
+        point = self.get_camera_position()
         x = point[0]
         y = point[1]
         z = point[2]
@@ -208,6 +208,26 @@ class Interactor(vtk.vtkInteractorStyleUser):
         position.append(point[2])
 
         return position
+
+    def spherical_rotate(self, rot_east_west, rot_north_south):
+
+        pass
+
+    def calc_phi(self):
+        position = self.get_camera_position()
+        x = position[0]
+        y = position[1]
+
+        phi = math.atan(x/y)
+        return phi
+
+    def calc_theta(self):
+        position = self.get_camera_position()
+        z = position[2]
+        r = self.get_r()
+        theta = math.acos(z/r)
+
+        return theta
 
     def get_max_rotate(self):
         """
