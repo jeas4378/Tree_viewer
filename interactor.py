@@ -1,3 +1,5 @@
+import math
+
 import vtk
 
 class Interactor(vtk.vtkInteractorStyleUser):
@@ -28,6 +30,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.current_pitch = 0
         self.pitch_min = 0
         self.pitch_max = 90
+        self.r = 0.0
 
     def left_button_press(self, obj, event):
         """
@@ -94,6 +97,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :return: Nothing.
         """
 
+        if self.r == 0.0:
+            self.calculate_r()
         # Get the previous position of the mouse cursor.
         last_xy_pos = self.iren.GetLastEventPosition()
         last_x = last_xy_pos[0]
@@ -106,7 +111,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
-            #self.camera_pitch(y, last_y)
+            #self.camehttps://forums.whirlpool.net.au/archive/2404379ra_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 self.rotate(x, last_x)
@@ -180,6 +185,29 @@ class Interactor(vtk.vtkInteractorStyleUser):
         :return: A numerical value.
         """
         return self.min_rotate
+
+    def calculate_r(self):
+        point = self.get_camera().GetPosition()
+        x = point[0]
+        y = point[1]
+        z = point[2]
+
+        self.r = math.sqrt(x*x + y*y + z*z)
+
+    def get_r(self):
+
+        return self.r
+
+    def get_camera_position(self):
+
+        point = self.get_camera().GetPosition()
+
+        position = []
+        position.append(point[0])
+        position.append(point[1]-0.5)
+        position.append(point[2])
+
+        return position
 
     def get_max_rotate(self):
         """
