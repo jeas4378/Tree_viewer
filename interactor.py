@@ -111,7 +111,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
-            #self.camehttps://forums.whirlpool.net.au/archive/2404379ra_pitch(y, last_y)
+            #self.camera_pitch(y, last_y)
             # If there is a limit on how much the tree can be rotated.
             if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
                 self.rotate(x, last_x)
@@ -143,7 +143,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
                 rotate_diff -= clamp
 
         # The actual rotation process.
-        self.get_camera().Azimuth(rotate_diff)
+        new_position = self.spherical_rotate(rotate_diff, 0)
+        self.set_camera_position(new_position)
         self.set_current_rotate(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
 
@@ -165,7 +166,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
             rotate_diff -= clamp
 
         # The actual rotation process.
-        self.get_camera().Elevation(rotate_diff)
+        new_position = self.spherical_rotate(0, rotate_diff)
+        self.set_camera_position(new_position)
         self.set_current_pitch(rotate_diff)
         self.get_camera().OrthogonalizeViewUp()
 
@@ -206,6 +208,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         return position
 
+    def set_camera_position(self, position):
+
+        self.get_camera().SetPosition(position[0], position[1], position[2])
+
     def spherical_rotate(self, ew, ns):
 
         phi = self.calc_phi()
@@ -231,7 +237,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         x = position[0]
         y = position[1]
 
-        phi = math.atan(x/y)
+        phi = math.atan(y/x)
         return phi
 
     def calc_theta(self):
