@@ -31,6 +31,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.pitch_min = 0
         self.pitch_max = 80
         self.rotation_speed = 1
+        self.bool_pitch = False
 
     def left_button_press(self, obj, event):
         """
@@ -109,14 +110,16 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         # If the left mouse button is clicked.
         if self.get_boolRotate():
-            #self.camera_pitch(y, last_y)
-            # If there is a limit on how much the tree can be rotated.
-            if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
-                #pass
-                self.rotate(x, last_x)
+            if self.get_bool_pitch():
+                self.camera_pitch(y, last_y)
             else:
-                #pass
-                self.rotate(x, last_x)
+                # If there is a limit on how much the tree can be rotated.
+                if self.is_in_valid_range(x, last_x) and self.get_limit_rotation():
+                    #pass
+                    self.rotate(x, last_x)
+                else:
+                    #pass
+                    self.rotate(x, last_x)
 
     def rotate(self, x, last_x):
         """
@@ -146,10 +149,10 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # The actual rotation process.
         if abs(rotate_diff) > 0:
             #rotate_diff /= self.rotation_speed
-            #camera_position = self.get_camera_position()
-            #new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
-            #self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
-            self.get_camera().Azimuth(rotate_diff)
+            camera_position = self.get_camera_position()
+            new_position = self.matrix_rotation(camera_position, [0, rotate_diff, 0])
+            self.get_camera().SetPosition(new_position[0], new_position[1], new_position[2])
+            #self.get_camera().Azimuth(rotate_diff)
             self.set_current_rotate(rotate_diff)
             self.get_camera().OrthogonalizeViewUp()
 
@@ -373,7 +376,15 @@ class Interactor(vtk.vtkInteractorStyleUser):
         """
         return self.current_pitch
 
+    def set_bool_pitch(self):
+        val = False if self.get_bool_pitch() else True
+        self.bool_pitch = val
+
+    def get_bool_pitch(self):
+        return self.bool_pitch
+
     def set_current_pitch(self, y):
+
         """
         Adjust the current pitch of the camera.
 
@@ -458,5 +469,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         if key == "o":
             self.set_ortographic()
+
+        if key == "b":
+            self.set_bool_pitch()
 
         self.get_renWin().Render()
