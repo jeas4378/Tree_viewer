@@ -167,7 +167,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # The actual rotation process.
         self.get_camera().Elevation(rotate_diff)
         self.set_current_pitch(rotate_diff)
-       # self.get_camera().OrthogonalizeViewUp()
+        self.get_camera().OrthogonalizeViewUp()
 
     def get_current_rotate(self):
         """
@@ -202,16 +202,29 @@ class Interactor(vtk.vtkInteractorStyleUser):
 
         point = self.get_camera().GetPosition()
 
-        position = []
-        position.append(point[0])
-        position.append(point[1]-0.5)
-        position.append(point[2])
+        position = [point[0], point[1] - 0.5, point[2]]
 
         return position
 
-    def spherical_rotate(self, rot_east_west, rot_north_south):
+    def spherical_rotate(self, ew, ns):
 
-        pass
+        phi = self.calc_phi()
+        theta = self.calc_theta()
+        r = self.get_r()
+
+        ew_radian = math.radians(ew)
+        ns_radian = math.radians(ns)
+
+        new_phi = phi + ew_radian
+        new_theta = theta + ns_radian
+
+        x = r*math.cos(new_theta)*math.sin(new_phi)
+        y = r*math.sin(new_theta)*math.sin(new_phi)
+        z = r*math.cos(new_theta)
+
+        position = [x, y, z]
+
+        return position
 
     def calc_phi(self):
         position = self.get_camera_position()
