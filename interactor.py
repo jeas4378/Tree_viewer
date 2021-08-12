@@ -146,6 +146,13 @@ class Interactor(vtk.vtkInteractorStyleUser):
         self.get_renWin().Render()
 
     def camera_pitch(self, y, last_y):
+        """
+        This is a method to control the pitch of the camera. It doesn't work correctly.
+
+        :param y: A numerical value.
+        :param last_y: A numerical value.
+        :return: Nothing.
+        """
         rotate_diff = last_y - y
         current = self.get_current_pitch()
         max_pitch = self.get_pitch_max()
@@ -162,7 +169,7 @@ class Interactor(vtk.vtkInteractorStyleUser):
         # The actual rotation process.
         self.get_camera().Elevation(rotate_diff)
         self.set_current_pitch(rotate_diff)
-       # self.get_camera().OrthogonalizeViewUp()
+        self.get_camera().OrthogonalizeViewUp()
 
     def get_current_rotate(self):
         """
