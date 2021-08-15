@@ -9,8 +9,8 @@ class Interactor(vtk.vtkInteractorStyleUser):
     def __init__(self, color="Blue", within_parallel=45, parent=None):
         self.iren = None
         self.renWin = None
-        self.max_rotate = 45
-        self.min_rotate = -45
+        self.max_rotate = within_parallel
+        self.min_rotate = -within_parallel
         self.current_rotate = 0
         self.boolRotate = 0
         self.AddObserver("LeftButtonPressEvent", self.left_button_press)
