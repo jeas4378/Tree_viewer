@@ -41,10 +41,6 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
     graphics_line_placement(host_tree, renderer, LIME_GREEN)
     graphics_line_placement(gene_tree, renderer, LIGHT_SALMON)
 
-    # Adds the lines to the Renderer.
-    #renderer.AddActor(host_line_actor)
-    #renderer.AddActor(gene_line_actor)
-
     # Set the background-color used in the Viewport.
     renderer.SetBackground(colors.GetColor3d("CornflowerBlue"))
 
@@ -174,11 +170,11 @@ def graphics_line_placement(tree, renderer, line_color=GRAY):
     """
     A function that creates the lines between each node in the tree.
 
-    Loops through all the nodes in the tree and constructs appropiate lines between each node to map out their
-    relation to each other. With the current organization of the code if you click on one line in the tree
-    you will select all lines.
+    Loops through all the nodes in the tree and constructs appropriate lines between each node to map out their
+    relation to each other.
 
     :param tree: A Tree-object containing information for a binary tree.
+    :param renderer: A Render-object that will be used to contain all the graphical objects.
     :param line_color: The color the line should have. Default is 'GRAY'.
     :return: A VTK-Actor object containing all the lines for the tree.
     """
@@ -187,7 +183,7 @@ def graphics_line_placement(tree, renderer, line_color=GRAY):
     i = 0
 
     for node in root:
-        
+
         linesPolyData = vtk.vtkPolyData()
         lines = vtk.vtkCellArray()
         pts = vtk.vtkPoints()
