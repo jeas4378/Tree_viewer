@@ -38,12 +38,12 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
     create_graphic_nodes(gene_tree, renderer, CUBE, RED)
 
     # Creates and add the lines connecting all the nodes in respective tree.
-    host_line_actor = graphics_line_placement(host_tree, LIME_GREEN)
-    gene_line_actor = graphics_line_placement(gene_tree, LIGHT_SALMON)
+    graphics_line_placement(host_tree, renderer, LIME_GREEN)
+    graphics_line_placement(gene_tree, renderer, LIGHT_SALMON)
 
     # Adds the lines to the Renderer.
-    renderer.AddActor(host_line_actor)
-    renderer.AddActor(gene_line_actor)
+    #renderer.AddActor(host_line_actor)
+    #renderer.AddActor(gene_line_actor)
 
     # Set the background-color used in the Viewport.
     renderer.SetBackground(colors.GetColor3d("CornflowerBlue"))
@@ -78,6 +78,23 @@ def graphics(host_tree, gene_tree, ortographical_degree, custom_interactor):
     # Creates an Interactor-object so the user can interact with the RenderWindow.
     iren = vtk.vtkRenderWindowInteractor()
     iren.SetRenderWindow(renWin)
+
+    # SPHERE for midpoint
+
+    # sphere = vtk.vtkSphereSource()
+    # sphere.SetRadius(0.01)
+    # sphere.SetThetaResolution(10)
+    # sphere.SetPhiResolution(10)
+    # sphere.SetCenter(-x, 0.5, z)
+    #
+    # sphereMapper = vtk.vtkPolyDataMapper()
+    # sphereMapper.SetInputConnection(sphere.GetOutputPort())
+    #
+    # sphereActor = vtk.vtkActor()
+    # sphereActor.SetMapper(sphereMapper)
+    # sphereActor.GetProperty().SetColor(colors.GetColor3d('Gold'))
+    #
+    # renderer.AddActor(sphereActor)
 
     # Creates an object that dictate how the use can interact with the render windows.
     inter = vtk.vtkInteractorStyleTrackballCamera()
@@ -153,7 +170,7 @@ def create_graphic_nodes(tree, renderer, shape, color):
         renderer.AddActor(actor)
 
 
-def graphics_line_placement(tree, line_color=GRAY):
+def graphics_line_placement(tree, renderer, line_color=GRAY):
     """
     A function that creates the lines between each node in the tree.
 
@@ -167,12 +184,13 @@ def graphics_line_placement(tree, line_color=GRAY):
     """
 
     root = tree.get_root()
-    linesPolyData = vtk.vtkPolyData()
-    lines = vtk.vtkCellArray()
-    pts = vtk.vtkPoints()
     i = 0
 
     for node in root:
+        
+        linesPolyData = vtk.vtkPolyData()
+        lines = vtk.vtkCellArray()
+        pts = vtk.vtkPoints()
         # Lines are created with a start-point at the node itself and end-point at the parent-node.
         if node.get_parent():
             node_pos = [node.get_x(), node.get_y(), node.get_z()]
@@ -187,28 +205,26 @@ def graphics_line_placement(tree, line_color=GRAY):
             line = vtk.vtkLine()
             line.GetPointIds().SetId(0, i)
             line.GetPointIds().SetId(1, i+1)
-            i += 2
 
             lines.InsertNextCell(line)
 
-    linesPolyData.SetLines(lines)
-    color = vtk.vtkNamedColors()
+        linesPolyData.SetLines(lines)
+        color = vtk.vtkNamedColors()
 
-    lines_graphic_property = vtk.vtkProperty()
-    lines_graphic_property.SetColor(color.GetColor3d(line_color))
-    lines_graphic_property.SetDiffuse(0.7)
-    lines_graphic_property.SetSpecular(0)
-    lines_graphic_property.SetSpecularPower(0)
+        lines_graphic_property = vtk.vtkProperty()
+        lines_graphic_property.SetColor(color.GetColor3d(line_color))
+        lines_graphic_property.SetDiffuse(0.7)
+        lines_graphic_property.SetSpecular(0)
+        lines_graphic_property.SetSpecularPower(0)
 
-    mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputData(linesPolyData)
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(linesPolyData)
 
-    actor = vtk.vtkActor()
-    actor.SetMapper(mapper)
-    actor.SetProperty(lines_graphic_property)
-    actor.GetProperty().SetLineWidth(0.01)
-
-    return actor
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+        actor.SetProperty(lines_graphic_property)
+        actor.GetProperty().SetLineWidth(0.01)
+        renderer.AddActor(actor)
 
 
 def calculate_focal_point(host_tree, gene_tree):
